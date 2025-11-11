@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15
+    container_name: logicgames_db
+    environment:
+      # ¡Ahora lee desde el archivo .env!
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    container_name: logicgames_backend
+    build: ./api/api
+    depends_on:
+      - db
+    environment:
+      # ¡Lee desde el .env!
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - APP_JWT_SECRET_KEY=${APP_JWT_SECRET_KEY}
+      - APP_SENDGRID_API_KEY=${APP_SENDGRID_API_KEY}
+
+  frontend:
+    container_name: logicgames_frontend
+    build: ./logic-games-ui
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,16 @@
+# ¡¡EL SECRETO MÁS IMPORTANTE!!
+.env
+
+# Archivos del IDE (IntelliJ)
+.idea/
+*.iml
+
+# Archivos de VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Archivos del OS
+.DS_Store
+Thumbs.db
