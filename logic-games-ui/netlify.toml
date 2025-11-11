@@ -1,25 +1,25 @@
 # --- Configuración de Construcción ---
 # Le dice a Netlify cómo construir tu app de Angular
 [build]
-  # El comando que corre (el de tu package.json)
   command = "npm run build"
-  
-  # La carpeta que debe servir (la que genera "ng build")
-  # ¡Asegúrate de que esta ruta sea correcta!
   publish = "dist/logic-games-ui/browser"
 
-# --- ¡LA REGLA MÁGICA "ANTI-CORS"! ---
+# --- REGLA 1: Proxy Inverso para API (Anti-CORS) ---
 [[redirects]]
-  # "from": Si el navegador pide cualquier cosa que empiece con "/api/"...
+  # Redirige /api/* a tu backend de Render
   from = "/api/*"
-  
-  # "to": ...redirígelo secretamente a tu backend de Render.
-  # El ":splat" al final es un comodín que pasa el resto de la URL
-  # (ej. /api/sudoku/load -> https://.../api/sudoku/load)
   to = "https://logicgames-backend.onrender.com/api/:splat"
+  # Mantiene el status 200 para evitar errores de CORS
+  status = 200
+
+# --- REGLA 2: Redirección de Single Page Application (SPA) ---
+# ¡ESTA ES LA REGLA QUE FALTABA!
+[[redirects]]
+  # "from": Coincide con cualquier ruta (cualquier cosa que no haya coincidido arriba)
+  from = "/*"
   
-  # "status": ¡Este es el truco! Devuelve un "200" (OK) en lugar de
-  # un "301" (Redirección). Esto lo convierte en un "proxy" y
-  # engaña al navegador para que piense que el frontend y el backend
-  # viven en el mismo dominio. ¡Adiós a los errores de CORS!
+  # "to": Servir siempre el archivo principal de Angular
+  to = "/index.html"
+  
+  # "status": Mantiene la URL en el navegador
   status = 200
