@@ -20,6 +20,9 @@ public class EmailService {
     @Value("${app.sendgrid.api-key}")
     private String apiKey;
 
+    @Value("${APP_FRONTEND_URL}")
+    private String frontendBaseUrl;
+
     // (Asegúrate de cambiar esto a tu email verificado en SendGrid)
     private String fromEmail = "monzonmariano1@gmail.com";
     private String fromName = "Equipo de LogicGames";
@@ -39,7 +42,9 @@ public class EmailService {
         Email to = new Email(toEmail);
 
         // 3. Define el contenido (¡HTML!)
-        String resetUrl = "http://localhost:4200/reset-password?token=" + token;
+        //String resetUrl = "http://localhost:4200/reset-password?token=" + token;
+        // 3. Define la URL de reseteo (¡AHORA USA LA VARIABLE INYECTADA!)
+        String resetUrl = this.frontendBaseUrl + "/reset-password?token=" + token;
         String htmlContent = "<html><body>" +
                 "<h1>¡Hola!</h1>" +
                 "<p>Hemos recibido una solicitud para resetear tu contraseña.</p>" +
