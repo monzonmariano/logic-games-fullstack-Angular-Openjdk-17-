@@ -11,6 +11,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import com.logicgames.api.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity // Activa la seguridad web de Spring
@@ -23,6 +25,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
+                // --- ¡¡LA CONFIGURACIÓN DE CORS FINAL (AHORA SÍ)!! ---
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+
+                    // ¡PERMITE TODO! (Esto está bien)
+                    config.setAllowedOrigins(List.of("*"));
+
+                    // ¡PERMITE TODO! (Esto está bien)
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+                    // ¡PERMITE TODO! (Esto está bien)
+                    config.setAllowedHeaders(List.of("*"));
+
+                    // ¡LA LÍNEA DEL CONFLICTO (config.setAllowCredentials(true);) SE HA BORRADO!
+
+                    return config;
+                }))
+
+
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth

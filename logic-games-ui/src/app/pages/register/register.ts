@@ -87,7 +87,7 @@ export class Register {
       return;
     }
 
-    console.log("Enviando al backend:", this.registerForm.value);
+   // console.log("Enviando al backend:", this.registerForm.value);
 
     
     
