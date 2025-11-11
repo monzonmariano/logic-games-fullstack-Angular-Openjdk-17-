@@ -30,16 +30,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
 
-                    // --- ¡LA LISTA DE INVITADOS VIP! ---
-                    config.setAllowedOrigins(List.of(
-                            "http://localhost", // Para tu 'docker-compose' local
-                            "https://logic-games.netlify.app" // ¡Tu app en Netlify!
-                    ));
+                    // ¡PERMITE TODO!
+                    config.setAllowedOrigins(List.of("*"));
                     // ------------------------------------
 
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Origin", "X-Forwarded-Proto"));
-                    config.setAllowCredentials(true); // ¡Esta SÍ la necesitamos!
+                    config.setAllowedHeaders(List.of("*"));
+                    //config.setAllowCredentials(true); // ¡Esta SÍ la necesitamos!
 
                     return config;
                 }))
