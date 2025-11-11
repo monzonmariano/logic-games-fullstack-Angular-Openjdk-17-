@@ -26,20 +26,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
 
-                // --- ¡¡LA CONFIGURACIÓN DE CORS FINAL (AHORA SÍ)!! ---
+                // --- ¡¡LA CONFIGURACIÓN DE CORS DEFINITIVA!! ---
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
 
-                    // ¡PERMITE TODO! (Esto está bien)
-                    config.setAllowedOrigins(List.of("*"));
+                    // --- ¡LA LISTA DE INVITADOS VIP! ---
+                    config.setAllowedOrigins(List.of(
+                            "http://localhost", // Para tu 'docker-compose' local
+                            "https://logic-games.netlify.app" // ¡Tu app en Netlify!
+                    ));
+                    // ------------------------------------
 
-                    // ¡PERMITE TODO! (Esto está bien)
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-                    // ¡PERMITE TODO! (Esto está bien)
                     config.setAllowedHeaders(List.of("*"));
-
-                    // ¡LA LÍNEA DEL CONFLICTO (config.setAllowCredentials(true);) SE HA BORRADO!
+                    config.setAllowCredentials(true); // ¡Esta SÍ la necesitamos!
 
                     return config;
                 }))
