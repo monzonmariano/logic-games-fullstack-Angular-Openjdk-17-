@@ -38,7 +38,7 @@ public class SecurityConfig {
                     // ------------------------------------
 
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Origin", "X-Forwarded-Proto"));
                     config.setAllowCredentials(true); // ¡Esta SÍ la necesitamos!
 
                     return config;
