@@ -1,0 +1,9 @@
+# Ignora los archivos de Git
+.git/
+.gitignore
+
+# ¡Ignora las dependencias! (Se instalan DENTRO del contenedor)
+node_modules/
+
+# Ignora los resultados de build (por si acaso)
+dist/

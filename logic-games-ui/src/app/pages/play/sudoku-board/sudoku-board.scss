@@ -1,0 +1,126 @@
+.game-controls {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 450px; // Mismo ancho que el tablero
+  margin: 10px auto 0; // Centrado
+}
+
+.spacer {
+  flex: 1 1 auto; // Empuja los botones a los lados
+}
+
+// Centra todo el contenedor del juego
+.sudoku-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr); 
+  width: 450px; 
+  height: 450px;
+  border: 3px solid black;
+  margin-top: 20px;
+  background-color: white; // Fondo blanco
+}
+
+.cell {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  
+  // --- Estilos de Input Reset ---
+  background-color: transparent; // ¡Sin fondo!
+  text-align: center; // ¡Centra el número!
+  padding: 0;
+  
+  // Oculta las flechas de "número" en Chrome/Firefox
+  -moz-appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  // ------------------------------
+  
+  font-size: 1.8em;
+  font-family: Arial, sans-serif;
+  color: #007bff; // Números del usuario en azul
+  
+  // ¡Efectos para las líneas gruesas (igual que antes)!
+  &:nth-child(9n + 1) { 
+    border-left: 2px solid black;
+  }
+  &:nth-child(3n) { 
+    border-right: 2px solid black;
+  }
+  &:nth-child(n+19):nth-child(-n+27),
+  &:nth-child(n+46):nth-child(-n+54) { 
+    border-bottom: 2px solid black;
+  }
+}
+
+// Clase para los números originales
+.original {
+  background-color: #eee; 
+  color: #333; 
+  font-weight: bold;
+}
+
+// Clase para los números originales
+.original {
+  background-color: #eee; 
+  color: #333; 
+  font-weight: bold;
+}
+
+// --- CLASE DE ERROR! ---
+.cell.invalid {
+  color: red;
+  font-weight: bold;
+  background-color: #ffe0e0; // Un fondo rosa pálido
+}
+
+// Estilo para el botón de comprobar
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1.2em;
+}
+
+// ¡NUEVO! Estilo para el mensaje
+.game-message {
+  margin-top: 20px;
+  font-size: 1.3em;
+  font-weight: bold;
+  padding: 15px;
+  background-color: #e0ffe0; // Fondo verde pálido
+  border: 1px solid green;
+  color: green;
+}
+
+// Estilo para el temporizador
+.timer-display {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
+}
+
+// ¡NUEVO! Tu idea del "titileo"
+.blinking {
+  color: red;
+  animation: blink-animation 1s infinite;
+}
+
+// Define la animación
+@keyframes blink-animation {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}

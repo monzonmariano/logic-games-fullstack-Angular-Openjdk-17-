@@ -1,0 +1,30 @@
+<div class="scoreboard-container">
+  <a mat-stroked-button routerLink="/">
+    <mat-icon>arrow_back</mat-icon>
+    Volver al Lobby
+  </a>
+
+  <h2>Historial de Partidas (Mejores Tiempos)</h2>
+
+  @if (scoreboard$ | async; as games) {
+
+    @if (games.length === 0) {
+      <p>Aún no has completado ninguna partida con tiempo. ¡A jugar!</p>
+    } @else {
+
+      <mat-list role="list">
+        @for (game of games; track game.id) {
+          <mat-list-item role="listitem">
+            <mat-icon matListItemIcon>emoji_events</mat-icon>
+            <div matListItemTitle>Dificultad: {{ game.difficulty }}</div>
+            <div matListItemLine>
+              <span>Tiempo: {{ formatTime(game.timeElapsedSeconds) }}</span>
+              <span class="date-span">Completado: {{ game.lastUpdatedAt | date:'short' }}</span>
+            </div>
+          </mat-list-item>
+        }
+      </mat-list>
+
+    }
+  }
+</div>

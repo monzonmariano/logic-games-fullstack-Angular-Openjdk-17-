@@ -1,0 +1,14 @@
+<mat-toolbar color="primary">
+  <span>LogicGames</span>
+  <span class="spacer"></span>
+
+  @if (!authService.isLoggedIn()) {
+    <a mat-button routerLink="/login">Iniciar Sesión</a>
+    <a mat-button routerLink="/register">Registrarse</a>
+  } @else {
+    <a mat-button routerLink="/scoreboard">Historial</a> 
+    <button mat-button (click)="logout()">Cerrar Sesión</button>
+  }
+</mat-toolbar>
+
+<router-outlet></router-outlet>

@@ -1,0 +1,43 @@
+<div class="sudoku-container">
+    <div class="game-controls">
+        <button mat-icon-button (click)="goBackToHome()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span class="spacer"></span>
+        <button mat-stroked-button (click)="saveAndQuit()" [disabled]="isGameOver"> Pausa y Salir
+        </button>
+    </div>
+
+    <h2>Sudoku (Dificultad: {{ difficulty }})</h2>
+
+    <div class="timer-display" [class.blinking]="isTimeCritical">
+        @if (gameMode === 'TIMED') {
+        <span>Tiempo Restante: {{ timeDisplay }}</span>
+        } @else {
+        <span>Tiempo: {{ timeDisplay }}</span>
+        }
+    </div>
+
+    <form [formGroup]="boardForm" (ngSubmit)="checkSolution()" class="sudoku-grid">
+
+        @for (row of boardView; let i = $index; track i) {
+        @for (cell of row; let j = $index; track j) {
+
+        <input class="cell" [class.original]="cell.isOriginal" [class.invalid]="invalidCells.has(i + '-' + j)"
+            type="tel" maxlength="1" pattern="[1-9]" [formControlName]="i + '-' + j"
+            (input)="onCellInput($event, i, j)">
+
+        }
+        }
+    </form>
+
+    <button (click)="checkSolution()" [disabled]="isGameOver"> Comprobar Solución
+    </button>
+
+    @if (gameMessage) {
+    <div class="game-message">
+        {{ gameMessage }}
+    </div>
+    }
+
+</div>

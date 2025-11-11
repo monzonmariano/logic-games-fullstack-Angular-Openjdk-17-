@@ -1,0 +1,39 @@
+<div class="lobby-container">
+  
+  <div class="welcome-message">
+    {{ secureMessage }}
+  </div>
+
+  <h2>Elige un Juego</h2>
+
+  <mat-card class="game-card">
+    <mat-card-header>
+      <mat-card-title>Sudoku</mat-card-title>
+      <mat-card-subtitle>El clásico juego de lógica de números.</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      
+      <div class="mode-section">
+        <p>¿Buscas una partida relajada? Juega sin límites.</p>
+        <button mat-raised-button color="primary" class="full-width-button" (click)="playGame('MEDIUM', 'FREE')">
+          Jugar Modo Libre
+        </button>
+      </div>
+
+      <hr>
+
+      <div class="mode-section">
+        <p>¿Buscas un desafío? ¡Supera el reloj!</p>
+        
+        <div class="difficulty-row">
+          <button mat-button (click)="playGame('EASY', 'TIMED')">Fácil (10 min)</button>
+          <button mat-button (click)="playGame('MEDIUM', 'TIMED')">Medio (6 min)</button>
+          <button mat-button (click)="playGame('HARD', 'TIMED')">Difícil (3 min)</button>
+        </div>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+  
+  </div>
