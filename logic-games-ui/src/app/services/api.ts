@@ -45,7 +45,7 @@ export interface SudokuSolutionRequest {
 export class Api { 
   
   // private apiUrl = 'http://localhost:8080/api';
-  private apiUrl = '/api';
+  private apiUrl = '/api'; 
   constructor(private http: HttpClient) { }
 
   // --- MÉTODOS DE AUTENTICACIÓN ---

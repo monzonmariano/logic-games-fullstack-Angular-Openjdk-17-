@@ -36,13 +36,13 @@ public class ApplicationConfig {
     // 2. El "Proveedor de Autenticación" (AuthenticationProvider)
     // Es el "gerente" que une el "Buscador de Usuarios" (paso 1)
     // con el "Encriptador de Contraseñas" (el bean que ya tenías).
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+//    @Bean
+//    public AuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService());
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//        return authProvider;
+//    }
 
     // 3. El "Gerente General de Autenticación" (AuthenticationManager)
     // El "cerebro" que usará nuestro AuthService para procesar un login.

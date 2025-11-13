@@ -4,12 +4,12 @@ import com.logicgames.api.auth.dtos.AuthenticationRequest;
 import com.logicgames.api.auth.dtos.AuthenticationResponse;
 import com.logicgames.api.auth.dtos.RegisterRequest;
 import com.logicgames.api.auth.dtos.ResetPasswordRequest;
-import com.logicgames.api.jwt.JwtService; // <-- IMPORTA
+import com.logicgames.api.jwt.JwtService;
 import com.logicgames.api.user.User;
 import com.logicgames.api.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager; // <-- IMPORTA
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // <-- IMPORTA
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.Optional;
 import com.logicgames.api.email.EmailService;
 
 @Service // <-- Post-it: "Esta es una clase de lógica de negocio"
-@RequiredArgsConstructor // <-- Lombok: Crea un constructor por nosotros
+@RequiredArgsConstructor // <-- Lombok: Crenosotrosa un constructor por
 public class AuthService {
 
     private final UserRepository userRepository;

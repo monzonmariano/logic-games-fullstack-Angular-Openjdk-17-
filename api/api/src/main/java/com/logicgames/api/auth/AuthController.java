@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 
-@RestController // <-- Post-it: Es un controlador de API (como HelloController)
+@RestController // <-- Post-it: Es un controlador de API
 @RequestMapping("/api/auth") // Todas las rutas aquí empiezan con /api/auth
 @RequiredArgsConstructor
 public class AuthController {

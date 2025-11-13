@@ -67,6 +67,8 @@ public class JwtAuthenticationFilter extends  OncePerRequestFilter {
 
 
             // 7. ¡AHORA SÍ! Validamos el token
+            //Si el token NO es válido,  el 'if' se salta y el usuario no se autentica.
+
             if (jwtService.isTokenValid(jwt, userDetails)) {
 
                 // 8. Creamos un "ticket de autenticación" para Spring Security
@@ -83,24 +85,7 @@ public class JwtAuthenticationFilter extends  OncePerRequestFilter {
                 // 9. ¡Ponemos el "ticket" en el "contexto de seguridad"!
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-            // (El 'else' se omite, si el token no es válido,
-            // simplemente no lo autenticamos y lo dejamos pasar)
-            // (Una implementación real validaría la expiración aquí)
 
-            // 8. Creamos un "ticket de autenticación" para Spring Security
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null, // No necesitamos credenciales (contraseña)
-                    userDetails.getAuthorities()
-            );
-
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
-
-            // 9. ¡Ponemos el "ticket" en el "contexto de seguridad"!
-            // ¡Spring Security ahora sabe que este usuario está logueado!
-            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         // 10. Dejamos pasar la petición (ahora autenticada)
