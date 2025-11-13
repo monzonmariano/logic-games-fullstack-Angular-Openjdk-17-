@@ -36,6 +36,7 @@ export interface SaveGameRequest {
 // Para POST /api/sudoku/complete (coincide con SudokuSolutionRequest.java)
 export interface SudokuSolutionRequest {
   boardString: string;
+  timeElapsedSeconds: number;
 }
 
 

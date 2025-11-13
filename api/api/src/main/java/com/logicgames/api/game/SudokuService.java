@@ -285,6 +285,8 @@ public class SudokuService {
         if ("TIMED".equals(game.getGameMode())) {
             // Si era con tiempo, la guardamos para el "Scoreboard"
             game.setState("COMPLETED");
+            // Actualiza el tiempo del juego con el tiempo final que envió el frontend
+            game.setTimeElapsedSeconds(request.getTimeElapsedSeconds());
             game.setLastUpdatedAt(LocalDateTime.now());
             sudokuGameRepository.save(game);
         } else {

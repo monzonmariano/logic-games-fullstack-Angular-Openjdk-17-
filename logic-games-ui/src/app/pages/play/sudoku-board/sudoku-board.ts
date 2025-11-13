@@ -308,7 +308,10 @@ export class SudokuBoard implements OnInit, OnDestroy {
 
     // ¡El frontend cree que ganamos! Verifiquemos con el backend.
     this.gameMessage = "¡Solución correcta! Comprobando con el servidor...";
-    const request: SudokuSolutionRequest = { boardString: userSolutionString };
+    const request: SudokuSolutionRequest = { 
+      boardString: userSolutionString,
+      timeElapsedSeconds : this.timeElapsed
+    };
 
     this.apiService.completeGame(request).subscribe({
       next: (didWin) => {
