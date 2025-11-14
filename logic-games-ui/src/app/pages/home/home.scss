@@ -1,6 +1,6 @@
 :host {
   display: block;
-  height: 100%; // Hace que <app-home> llene el <main-content-area>
+  height: 100%;
 }
 
 .home-container {
@@ -16,10 +16,12 @@
   position: relative;
 }
 
+// --- ESTILOS POR DEFECTO (MÓVIL) ---
+// (Aquí arreglamos la colisión)
+
 .user-display {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  // Ya NO es 'absolute'. Es un bloque normal.
+  position: relative; 
   display: flex;
   align-items: center;
   gap: 8px;
@@ -29,19 +31,25 @@
   font-size: 0.9em;
   color: #333;
   z-index: 10;
+  width: 90%;
+  max-width: 400px;
+  margin-bottom: 15px; // Espacio entre él y el selector
+  // ¡Lo alineamos a la derecha!
+  align-self: flex-end; 
+  justify-content: flex-end; // Alinea el contenido (icono + texto) a la derecha
 }
 
 .game-selector {
-  position: absolute;
-  top: 20px;
-  width: 60%;
-  max-width: 300px;
-  left: 20px;
+  // Ya NO es 'absolute'.
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  margin-bottom: 20px;
 }
 
 .game-swiper-container {
   width: 100%;
-  max-width: 400px;
+  max-width: 400px; // Tamaño por defecto (móvil)
   overflow: hidden;
 }
 
@@ -63,26 +71,23 @@
   justify-content: center;
   align-items: center;
   border-radius: 15px;
-  
   background-size: cover;
   background-position: center;
   color: white;
 
-  // Velo oscuro
   &::before {
     content: '';
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.3); // Velo
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 15px;
     z-index: 1;
   }
 
-  // Texto
   h3, p, .play-button {
     position: relative;
-    z-index: 2; // Encima del velo
+    z-index: 2;
   }
 
   h3 {
@@ -93,43 +98,89 @@
 
   p {
     font-size: 1.1em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); // Corregido
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
   }
 
-  // --- ¡BLOQUE .play-button CORREGIDO! ---
+  // --- ¡ARREGLO DEL BOTÓN PLAY! ---
   .play-button {
     position: absolute;
     top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
+    // ¡Más grande!
+    width: 90px;
+    height: 90px;
     background: transparent;
-    border: 2px solid white;
+    border: none; // <-- ¡Quitamos el borde blanco feo!
     z-index: 2;
 
-    // Estilos para el icono (deben estar aquí)
     mat-icon {
-      font-size: 50px;
-      width: 50px;
-      height: 50px;
+      // ¡Icono más grande!
+      font-size: 55px;
+      width: 55px;
+      height: 55px;
       color: white;
+      opacity: 0.8; // Un poco sutil
     }
   
-    // Tu idea del alpha "resaltado" (una sola vez)
     &:hover {
       background: rgba(0, 0, 0, 0.7);
       opacity: 1;
+      mat-icon {
+        opacity: 1;
+      }
     }
   }
-  // --- FIN DEL BLOQUE CORREGIDO ---
 } 
 
-// Controles (flechas)
 .swiper-controls {
   margin-top: 20px;
   display: flex;
   justify-content: space-between;
   width: 100%;
   max-width: 400px;
+}
+
+// --- ARREGLO PARA PC (PANTALLAS GRANDES) ---
+@media (min-width: 768px) {
+  
+  // En PC, volvemos al layout 'absolute'
+  .user-display {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: auto; // Resetea el ancho
+    align-self: auto;
+    justify-content: flex-start;
+  }
+
+  .game-selector {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 60%;
+    max-width: 300px;
+  }
+
+  // ¡Hacemos las tarjetas más grandes en PC!
+  .game-swiper-container {
+    max-width: 500px; 
+  }
+
+  .game-card {
+    min-height: 300px;
+  }
+}
+
+// --- ARREGLO PARA MÓVIL HORIZONTAL ---
+@media (orientation: landscape) and (max-height: 500px) {
+  
+  // Si la pantalla es horizontal y de poca altura (un móvil)...
+  .home-container {
+    height: auto; // ...deja que el contenido crezca...
+    overflow-y: auto; // ...y permite el scroll.
+  }
+
+  // (El layout de PC 'absolute' no se activará si el ancho
+  // es menor a 768px, así que el apilado vertical funcionará)
 }
