@@ -4,14 +4,15 @@ import { Api } from '../../services/api'; // El "Plomero"
 import { ScoreboardEntry, SudokuGame } from '../../services/game-state'; // La interfaz
 import { MatListModule } from '@angular/material/list'; // <-- ¡Para listas bonitas!
 import { MatIconModule } from '@angular/material/icon'; // <-- ¡Para iconos!
-import { RouterLink } from '@angular/router'; // <-- Para el botón "Volver"
+import { RouterLink ,Router} from '@angular/router'; // <-- Para el botón "Volver"
 import { Observable } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-scoreboard',
   standalone: true,
   // ¡Añade los nuevos módulos!
-  imports: [CommonModule, MatListModule, MatIconModule, RouterLink],
+  imports: [CommonModule, MatListModule, MatIconModule, RouterLink,MatButtonModule],
   templateUrl: './scoreboard.html',
   styleUrl: './scoreboard.scss'
 })
@@ -20,11 +21,13 @@ export class Scoreboard implements OnInit {
   // ¡Una tubería para guardar el historial!
   public scoreboard$: Observable<ScoreboardEntry[]>;
 
-  constructor(private apiService: Api) {
+  constructor(
+    private apiService: Api,
+    private router: Router 
+  ) {
     // Inicializa la tubería vacía
     this.scoreboard$ = new Observable<ScoreboardEntry[]>();
   }
-
   ngOnInit(): void {
     // ¡Llama al plomero para pedir el historial!
     this.scoreboard$ = this.apiService.getScoreboard();
@@ -37,5 +40,12 @@ export class Scoreboard implements OnInit {
     const paddedMinutes = String(minutes).padStart(2, '0');
     const paddedSeconds = String(seconds).padStart(2, '0');
     return `${paddedMinutes}:${paddedSeconds}`;
+
+    
+  }
+  goBackToHome(): void {
+    
+    this.router.navigate(['/']);
   }
 }
+
