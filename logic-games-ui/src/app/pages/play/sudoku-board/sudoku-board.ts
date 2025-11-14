@@ -297,7 +297,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
   goBackToHome(): void {
     // (Podríamos preguntar "¿Estás seguro? Perderás el progreso no guardado")
     // Por ahora, solo navegamos.
-    this.router.navigate(['/']);
+    this.router.navigate(['/sudoku-lobby']);
   }
 
   // ---  ---
