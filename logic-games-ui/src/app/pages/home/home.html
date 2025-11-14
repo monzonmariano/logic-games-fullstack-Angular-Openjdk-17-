@@ -20,12 +20,11 @@
     <div class="game-swiper-track" [style.transform]="'translateX(' + (-currentIndex * 100) + '%)'">
 
       @for (game of games; track game.id) {
-      <div class="game-card" [style.background-image]="game.imageUrl">
+      <div class="game-card" [style.background-image]="game.imageUrl" (click)="selectGame(game)">
         <h3>{{ game.title }}</h3>
         <p>{{ game.description }}</p>
 
-        <button class="play-button" (click)="selectGame(game)">
-          <mat-icon>play_circle_filled</mat-icon>
+        <button class="play-button"> <mat-icon>play_circle_filled</mat-icon>
         </button>
       </div>
       }

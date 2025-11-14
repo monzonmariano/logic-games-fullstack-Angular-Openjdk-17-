@@ -355,7 +355,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
     this.apiService.saveGameProgress(request).subscribe({
       next: () => {
         console.log("¡Partida guardada!");
-        this.router.navigate(['/']); // Envía al usuario al Home
+        this.router.navigate(['/sudoku-lobby']); // Envía al usuario al sudoku lobby  ota ve xD
       },
       error: (err) => {
         console.error("Error al guardar la partida", err);
