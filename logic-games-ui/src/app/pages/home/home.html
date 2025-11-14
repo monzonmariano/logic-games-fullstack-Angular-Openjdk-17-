@@ -1,27 +1,33 @@
 <div class="home-container">
+  <!--Añade el display del usuario en la esquina.-->
+  @if (userEmail$ | async; as email) {
+  <div class="user-display">
+    <mat-icon>account_circle</mat-icon>
+    <span>{{ email }}</span>
+  </div>
+  }
 
   <mat-form-field class="game-selector">
     <mat-label>Elegir un juego</mat-label>
     <mat-select (selectionChange)="jumpToGame($event.value)">
       @for (game of games; track game.id; let i = $index) {
-        <mat-option [value]="i">{{ game.title }}</mat-option>
+      <mat-option [value]="i">{{ game.title }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 
   <div class="game-swiper-container">
-    <div class="game-swiper-track" 
-         [style.transform]="'translateX(' + (-currentIndex * 100) + '%)'">
-      
+    <div class="game-swiper-track" [style.transform]="'translateX(' + (-currentIndex * 100) + '%)'">
+
       @for (game of games; track game.id) {
-        <div class="game-card">
-          <h3>{{ game.title }}</h3>
-          <p>{{ game.description }}</p>
-          
-          <button class="play-button" (click)="selectGame(game)">
-            <mat-icon>play_circle_filled</mat-icon>
-          </button>
-        </div>
+      <div class="game-card" [style.background-image]="game.imageUrl">
+        <h3>{{ game.title }}</h3>
+        <p>{{ game.description }}</p>
+
+        <button class="play-button" (click)="selectGame(game)">
+          <mat-icon>play_circle_filled</mat-icon>
+        </button>
+      </div>
       }
     </div>
   </div>
@@ -34,5 +40,5 @@
       <mat-icon>arrow_forward_ios</mat-icon>
     </button>
   </div>
-  
+
 </div>

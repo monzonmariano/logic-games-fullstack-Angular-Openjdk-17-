@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Api } from '../../services/api';
 import { Router } from '@angular/router';
-
+import { AuthService } from '../../services/auth';
+import { Observable } from 'rxjs';
 // ¡Importa el "cerebro" del estado del juego!
 import { GameStateService } from '../../services/game-state';
 
@@ -34,19 +35,40 @@ export class Home implements OnInit {
   public secureMessage = 'Cargando datos secretos...';
 
   // ¡La lista de juegos!
-  public games = [
-    { id: 'sudoku', title: 'Sudoku', description: 'El clásico juego de lógica...' },
-    { id: 'wordsearch', title: 'Sopa de Letras', description: 'Próximamente...' },
-    { id: 'crossword', title: 'Palabras Cruzadas', description: 'Próximamente...' }
+ public games = [
+    { 
+      id: 'sudoku', 
+      title: 'Sudoku', 
+      description: 'El clásico juego de lógica...',
+      // ¡AÑADE ESTA LÍNEA!
+      imageUrl: 'url("https://source.unsplash.com/random/400x300?sudoku,puzzle")'
+    },
+    { 
+      id: 'wordsearch', 
+      title: 'Sopa de Letras', 
+      description: 'Próximamente...',
+      // ¡AÑADE ESTA LÍNEA!
+      imageUrl: 'url("https://source.unsplash.com/random/400x300?letters,search")'
+    },
+    { 
+      id: 'crossword', 
+      title: 'Palabras Cruzadas', 
+      description: 'Próximamente...',
+      // ¡AÑADE ESTA LÍNEA!
+      imageUrl: 'url("https://source.unsplash.com/random/400x300?crossword,pen")'
+    }
   ];
 
   public currentIndex = 0; // Tarjeta actual
 
+  public userEmail$: Observable<string | null>;
+  
   constructor(
     private apiService: Api,
     private router: Router,
+    private authService: AuthService
   
-  ) { }
+  ) {this.userEmail$ = this.authService.currentUserEmail$; }
 
   ngOnInit(): void {
     // Esto está perfecto, carga tu mensaje secreto
