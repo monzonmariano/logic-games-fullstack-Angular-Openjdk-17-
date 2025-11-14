@@ -1,20 +1,22 @@
 .numpad-grid-popup {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); // 3 columnas
-  width: 150px; // Ancho del pop-up (ajusta al gusto)
+  grid-template-columns: repeat(3, 1fr);
+  width: 180px; // Un poco más grande para botones más cómodos
   
   button {
-    min-width: 50px; // Tamaño de cada botón
-    height: 50px;
-    font-size: 1.2rem;
+    min-width: 60px; // 180 / 3
+    height: 60px;
+    font-size: 1.3rem;
     padding: 0;
     margin: 0;
-    border-radius: 0; // Botones cuadrados
+    border-radius: 0;
+    border-color: #eee; // Un borde suave
   }
 
   .numpad-clear-popup {
-    
-    // Le dice al botón de borrar que ocupe las 3 columnas
-    grid-column: 1 / -1;
+    // ¡EL ARREGLO DEL CENTRADO!
+    // Le dice al botón que ocupe desde la columna 1 a la 4 (es decir, 3 columnas)
+    grid-column: 1 / 4; 
+    border-top: 1px solid #ccc; // Separa el botón de borrar
   }
 }

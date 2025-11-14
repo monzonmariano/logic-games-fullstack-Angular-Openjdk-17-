@@ -15,7 +15,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
+
+  // 100dvh = 100% de la altura de la pantalla (una unidad moderna)
+  // 100vh es una alternativa si 'dvh' no te funciona
+  height: 100dvh; 
+  box-sizing: border-box; // Asegura que el padding no añada altura
+  overflow: hidden; // ¡PROHÍBE EL SCROLL!
 }
 
 
@@ -97,6 +103,7 @@ button {
   background-color: #e0ffe0; // Fondo verde pálido
   border: 1px solid green;
   color: green;
+  flex-shrink: 0; // No dejes que el mensaje se encoja
 }
 
 // Estilo para el temporizador
@@ -105,6 +112,7 @@ button {
   font-weight: bold;
   color: #333;
   margin-top: 10px;
+  flex-shrink: 0; // No dejes que el timer se encoja
 }
 
 // ¡NUEVO! Tu idea del "titileo"
@@ -155,11 +163,13 @@ button {
   /* 2. El grid de Sudoku */
   .sudoku-grid {
     // ¡Aquí está la lógica del 95% que discutimos!
-    width: 95%; 
-    margin: 10px auto; // Centrado
-    aspect-ratio: 1 / 1; 
-    height: auto;
-    border-width: 2px; // Borde más fino en móvil
+    width: 95%; // Mantiene el 95%
+  aspect-ratio: 1 / 1; // Mantiene el cuadrado
+  margin: 10px auto;
+   // Le decimos al grid que ocupe el espacio flexible
+  flex-grow: 1; 
+  // ¡Evita que el grid sea MÁS GRANDE que el espacio!
+  max-height: 500px; // (O el tamaño que veas bien en PC)
   }
 
   /* 3. Las celdas individuales */
@@ -187,5 +197,7 @@ button {
       width: 100%; // Ocupan todo el ancho
       margin-top: 10px;
     }
+    width: 95%;
+  flex-shrink: 0; // No dejes que los botones se encojan
   }
 }
