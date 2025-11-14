@@ -7,6 +7,7 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angul
 import { Api, SaveGameRequest, SudokuSolutionRequest } from '../../../services/api';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Numpad } from '../../../shared/numpad/numpad';
 
 export interface SudokuCell {
   value: number; // 0 si está vacía, 1-9 si tiene un número
@@ -15,7 +16,7 @@ export interface SudokuCell {
 
 @Component({
   selector: 'app-sudoku-board',
-  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatButtonModule], // ¡CommonModule nos da @for y @if!
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatButtonModule, Numpad], // ¡CommonModule nos da @for y @if!
   templateUrl: './sudoku-board.html',
   styleUrl: './sudoku-board.scss',
 })
@@ -45,6 +46,9 @@ export class SudokuBoard implements OnInit, OnDestroy {
   public gameMode: string = 'FREE';
   public isTimeCritical: boolean = false; // ¡Para el titileo!
   public isGameOver: boolean = false;
+  
+  // Guarda la celda que está seleccionada
+  public activeCellKey: string | null = null;
 
   constructor(
     private gameState: GameStateService,
@@ -354,6 +358,28 @@ export class SudokuBoard implements OnInit, OnDestroy {
       }
     });
   }
+
+  // Guarda la celda que el usuario acaba de tocar
+  public onCellFocus(row: number, col: number): void {
+    this.activeCellKey = `${row}-${col}`;
+  }
+
+  // ¡Recibe el evento (1-9 o null) desde el Numpad!
+  public onNumpadInput(value: number | null): void {
+    // Si no hay ninguna celda seleccionada, no hace nada
+    if (!this.activeCellKey) {
+      return;
+    }
+    // Busca el control del formulario para esa celda
+    const control = this.boardForm.get(this.activeCellKey);
+
+    if (control && control.enabled) { // Solo si la celda es editable
+      // Asigna el valor (ej. 5) o un string vacío (si es 'null')
+      control.setValue(value ? value.toString() : '');
+      
+      // ¡Re-valida todo el tablero!
+      this.validateAllCells(); //
+    }
 }
 
-
+}
