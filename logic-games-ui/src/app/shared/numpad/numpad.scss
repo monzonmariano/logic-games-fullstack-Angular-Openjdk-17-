@@ -13,7 +13,8 @@
   }
 
   .numpad-clear-popup {
-    // El botón de borrar ocupa las últimas 2 columnas
-    grid-column: span 2; 
+    
+    // Le dice al botón de borrar que ocupe las 3 columnas
+    grid-column: 1 / -1;
   }
 }

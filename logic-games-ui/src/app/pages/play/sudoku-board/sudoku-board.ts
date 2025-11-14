@@ -366,34 +366,43 @@ export class SudokuBoard implements OnInit, OnDestroy {
 
   // Guarda la celda que el usuario acaba de tocar
   public onCellClick(event: MouseEvent, row: number, col: number): void {
-    
     const cellKey = `${row}-${col}`;
     const control = this.boardForm.get(cellKey);
 
-    // Solo abre el pop-up si la celda es editable
     if (control && control.enabled) {
       this.activeCellKey = cellKey;
-      // 1. Definimos el tamaño de tu pop-up (basado en el CSS)
+      
+      // --- ¡LA LÓGICA DE CENTRADO "DE LUJO"! ---
+      
+      // 1. Definimos el tamaño de tu pop-up (de tu CSS)
       const popupWidth = 150; // 3 botones de 50px
-      const popupHeight = 200; // 4 filas de 50px (aprox)
+      const popupHeight = 200; // 4 filas de 50px
 
       // 2. Medimos la pantalla
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
-      // 3. Calculamos la posición X (horizontal)
-      let left = event.clientX;
-      // Si el clic + el ancho del pop-up se salen...
-      if (left + popupWidth > screenWidth) {
-        // ... "pégalo" al borde derecho de la pantalla
-        left = screenWidth - popupWidth - 10; // (-10px de margen)
-      }
 
-      // 4. Calculamos la posición Y (vertical)
-      let top = event.clientY;
-      // Si el clic + el alto del pop-up se salen...
+      // 3. ¡LA MEJORA! Calculamos la posición inicial CENTRADA
+      let left = event.clientX - (popupWidth / 2); // Resta la mitad del ancho
+      let top = event.clientY - (popupHeight / 2); // Resta la mitad del alto
+
+      // 4. Lógica de bordes (Ahora comprueba los 4 lados)
+      
+      // Borde derecho
+      if (left + popupWidth > screenWidth) {
+        left = screenWidth - popupWidth - 10; // -10px de margen
+      }
+      // Borde izquierdo
+      if (left < 10) { // Si se sale por la izquierda
+        left = 10; // Pégalo al borde
+      }
+      // Borde inferior
       if (top + popupHeight > screenHeight) {
-        // ... "pégalo" al borde inferior
         top = screenHeight - popupHeight - 10;
+      }
+      // Borde superior
+      if (top < 10) { // Si se sale por arriba
+        top = 10;
       }
 
       this.numpadPosition = { x: left, y: top };
