@@ -72,12 +72,7 @@
   font-weight: bold;
 }
 
-// Clase para los números originales
-.original {
-  background-color: #eee; 
-  color: #333; 
-  font-weight: bold;
-}
+
 
 // --- CLASE DE ERROR! ---
 .cell.invalid {
@@ -146,4 +141,50 @@ button {
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   overflow: hidden; // Para que el numpad de dentro respete el borde redondeado
+}
+
+/* --- ESTILOS RESPONSIVOS PARA MÓVIL --- */
+@media (max-width: 600px) {
+
+  /* 1. Contenedor principal del juego */
+  .sudoku-container { // <-- Apunta a tu clase contenedora real
+    padding: 8px;
+  }
+
+  /* 2. El grid de Sudoku */
+  .sudoku-grid {
+    // ¡Aquí está la lógica del 95% que discutimos!
+    width: 95%; 
+    margin: 10px auto; // Centrado
+    aspect-ratio: 1 / 1; 
+    height: auto;
+    border-width: 2px; // Borde más fino en móvil
+  }
+
+  /* 3. Las celdas individuales */
+  .cell {
+    font-size: 16px; // Un poco más pequeño
+    
+    // Estilos de bordes gruesos (¡importante re-declarar!)
+    &:nth-child(9n + 1) { 
+      border-left: 1.5px solid black;
+    }
+    &:nth-child(3n) { 
+      border-right: 1.5px solid black;
+    }
+    &:nth-child(n+19):nth-child(-n+27),
+    &:nth-child(n+46):nth-child(-n+54) { 
+      border-bottom: 1.5px solid black;
+    }
+  }
+
+  /* 4. Los botones (Pausa, Comprobar, etc.) */
+  .game-controls {
+    flex-direction: column; // Apila los botones
+    
+    button {
+      width: 100%; // Ocupan todo el ancho
+      margin-top: 10px;
+    }
+  }
 }
