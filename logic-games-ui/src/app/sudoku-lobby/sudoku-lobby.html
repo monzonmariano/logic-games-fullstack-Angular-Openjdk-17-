@@ -1,0 +1,44 @@
+@if (isLoading) {
+  <div class="loading-spinner">
+    <h2>Preparando tu partida...</h2>
+    </div>
+} @else {
+  <div class="lobby-container">
+    
+    <div class="lobby-header">
+      <a mat-icon-button routerLink="/">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <h2>Elige tu desafío</h2>
+    </div>
+
+    <mat-card class="mode-section">
+      <mat-card-header>
+        <mat-card-title>Modo con Tiempo</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>¡Contrarreloj! Gana la partida antes de que el tiempo se acabe.</p>
+        <div class="difficulty-row">
+          <button mat-flat-button (click)="playGame('EASY', 'TIMED')">Fácil (10 min)</button>
+          <button mat-flat-button (click)="playGame('MEDIUM', 'TIMED')">Medio (6 min)</button>
+          <button mat-flat-button (click)="playGame('HARD', 'TIMED')">Difícil (3 min)</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="mode-section">
+      <mat-card-header>
+        <mat-card-title>Modo Libre</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>¿Buscas una partida relajada? Juega sin límites.</p>
+        <div class="difficulty-row">
+          <button mat-button (click)="playGame('EASY', 'FREE')">Fácil</button>
+          <button mat-button (click)="playGame('MEDIUM', 'FREE')">Medio</button>
+          <button mat-button (click)="playGame('HARD', 'FREE')">Difícil</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+}

@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.lobby-container, .loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.loading-spinner {
+  justify-content: center;
+}
+
+.lobby-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  
+  h2 {
+    margin: 0;
+    margin-left: 10px;
+  }
+}
+
+.mode-section {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
+}
+
+.difficulty-row {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap; // Permite que los botones bajen en móviles
+  gap: 10px; // Espacio entre botones
+  margin-top: 15px;
+}
+
+// En pantallas pequeñas (móvil), apila las secciones
+@media (max-width: 600px) {
+  .lobby-container {
+    padding: 10px;
+  }
+
+  .mode-section {
+    margin-top: 15px;
+  }
+}

@@ -9,6 +9,7 @@ import { ForgotPassword } from './pages/forgot-password/forgot-password';
 import { ResetPassword } from './pages/reset-password/reset-password';
 import { SudokuBoard } from './pages/play/sudoku-board/sudoku-board';
 import { Scoreboard } from './pages/scoreboard/scoreboard';
+import { SudokuLobby } from './sudoku-lobby/sudoku-lobby';
 
 export const routes: Routes = [
 
@@ -49,7 +50,12 @@ export const routes: Routes = [
     path: 'scoreboard', // La URL será /scoreboard
     component: Scoreboard,
     canActivate: [authGuard] // ¡Protegida, por supuesto!
-  }
+  },
+  { 
+    path: 'sudoku-lobby', 
+    component: SudokuLobby, 
+    canActivate: [authGuard] // <-- Protegida
+  },
 
 
 ];
