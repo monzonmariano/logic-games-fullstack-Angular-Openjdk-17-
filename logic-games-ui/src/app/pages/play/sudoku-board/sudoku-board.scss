@@ -124,3 +124,26 @@ button {
   50% { opacity: 0.3; }
   100% { opacity: 1; }
 }
+
+/* El fondo oscuro semitransparente */
+.numpad-backdrop {
+  position: fixed; // Cubre toda la pantalla
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2); // Puedes ajustar la oscuridad
+  z-index: 99; // Por debajo del numpad, por encima de todo
+}
+
+/* El contenedor que "flota" */
+.numpad-popup-wrapper {
+  position: fixed; // ¡Cambiado a 'fixed' para que funcione mejor!
+  z-index: 100; // ¡Por encima de todo!
+  
+  // Estilos para que se vea bien
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden; // Para que el numpad de dentro respete el borde redondeado
+}

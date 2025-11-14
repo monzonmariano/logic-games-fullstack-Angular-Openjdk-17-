@@ -46,8 +46,13 @@ export class SudokuBoard implements OnInit, OnDestroy {
   public gameMode: string = 'FREE';
   public isTimeCritical: boolean = false; // ¡Para el titileo!
   public isGameOver: boolean = false;
-  
-  // Guarda la celda que está seleccionada
+
+ 
+
+
+  // --- VARIABLES DE ESTADO PARA EL POP-UP! ---
+  public isNumpadOpen: boolean = false;
+  public numpadPosition = { x: 0, y: 0 };
   public activeCellKey: string | null = null;
 
   constructor(
@@ -115,16 +120,16 @@ export class SudokuBoard implements OnInit, OnDestroy {
 
       } else {
         // ¡SE ACABÓ EL TIEMPO!
-      this.isTimeCritical = false;
-      this.timerSubscription?.unsubscribe(); 
-      this.gameMessage = "¡SE ACABÓ EL TIEMPO! 😥 Has perdido.";
-      this.boardForm.disable(); // Bloquea el tablero
-      this.isGameOver = true; // 
-      
-      this.apiService.failGame().subscribe({
-        next: () => console.log("Partida marcada como FAILED en el backend."),
-        error: (err) => console.error("Error al marcar la partida como FAILED", err)
-      });
+        this.isTimeCritical = false;
+        this.timerSubscription?.unsubscribe();
+        this.gameMessage = "¡SE ACABÓ EL TIEMPO! 😥 Has perdido.";
+        this.boardForm.disable(); // Bloquea el tablero
+        this.isGameOver = true; // 
+
+        this.apiService.failGame().subscribe({
+          next: () => console.log("Partida marcada como FAILED en el backend."),
+          error: (err) => console.error("Error al marcar la partida como FAILED", err)
+        });
       }
     });
   }
@@ -312,9 +317,9 @@ export class SudokuBoard implements OnInit, OnDestroy {
 
     // ¡El frontend cree que ganamos! Verifiquemos con el backend.
     this.gameMessage = "¡Solución correcta! Comprobando con el servidor...";
-    const request: SudokuSolutionRequest = { 
+    const request: SudokuSolutionRequest = {
       boardString: userSolutionString,
-      timeElapsedSeconds : this.timeElapsed
+      timeElapsedSeconds: this.timeElapsed
     };
 
     this.apiService.completeGame(request).subscribe({
@@ -360,26 +365,38 @@ export class SudokuBoard implements OnInit, OnDestroy {
   }
 
   // Guarda la celda que el usuario acaba de tocar
-  public onCellFocus(row: number, col: number): void {
-    this.activeCellKey = `${row}-${col}`;
+  public onCellClick(event: MouseEvent, row: number, col: number): void {
+    
+    const cellKey = `${row}-${col}`;
+    const control = this.boardForm.get(cellKey);
+
+    // Solo abre el pop-up si la celda es editable
+    if (control && control.enabled) {
+      this.activeCellKey = cellKey;
+      
+      // ¡Centra el pop-up donde el usuario hizo clic!
+      // (Puedes ajustar los pixeles -50 para centrarlo)
+      this.numpadPosition = { x: event.clientX - 50, y: event.clientY - 100 };
+      
+      this.isNumpadOpen = true;
+    }
   }
 
-  // ¡Recibe el evento (1-9 o null) desde el Numpad!
   public onNumpadInput(value: number | null): void {
-    // Si no hay ninguna celda seleccionada, no hace nada
     if (!this.activeCellKey) {
       return;
     }
-    // Busca el control del formulario para esa celda
+
     const control = this.boardForm.get(this.activeCellKey);
 
-    if (control && control.enabled) { // Solo si la celda es editable
-      // Asigna el valor (ej. 5) o un string vacío (si es 'null')
+    if (control && control.enabled) { 
       control.setValue(value ? value.toString() : '');
-      
-      // ¡Re-valida todo el tablero!
       this.validateAllCells(); //
     }
-}
+
+    // ¡Cierra el pop-up después de seleccionar!
+    this.isNumpadOpen = false;
+    this.activeCellKey = null; // Limpia la celda activa
+  }
 
 }

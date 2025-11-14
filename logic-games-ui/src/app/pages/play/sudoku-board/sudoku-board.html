@@ -24,9 +24,10 @@
         @for (cell of row; let j = $index; track j) {
 
         <input class="cell" [class.original]="cell.isOriginal" [class.invalid]="invalidCells.has(i + '-' + j)"
-            type="tel" maxlength="1" pattern="[1-9]" [formControlName]="i + '-' + j"
+            type="tel" maxlength="1" pattern="[1-9]" [formControlName]="i + '-' + j" 
             (input)="onCellInput($event, i, j)"
-            (focus)="onCellFocus(i, j)">
+            (click)="onCellClick($event, i, j)" 
+            readonly>
         }
         }
     </form>
@@ -39,6 +40,12 @@
         {{ gameMessage }}
     </div>
     }
-<app-numpad (numpadClick)="onNumpadInput($event)"></app-numpad>
-</div>
+    @if (isNumpadOpen) {
 
+    <div class="numpad-popup-wrapper" [style.left.px]="numpadPosition.x" [style.top.px]="numpadPosition.y">
+        <app-numpad (numpadClick)="onNumpadInput($event)"></app-numpad>
+    </div>
+
+    <div class="numpad-backdrop" (click)="isNumpadOpen = false"></div>
+    }
+</div>
