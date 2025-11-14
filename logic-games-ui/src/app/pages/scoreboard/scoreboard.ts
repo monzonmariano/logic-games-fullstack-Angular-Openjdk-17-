@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Api } from '../../services/api'; // El "Plomero"
-import { SudokuGame } from '../../services/game-state'; // La interfaz
+import { ScoreboardEntry, SudokuGame } from '../../services/game-state'; // La interfaz
 import { MatListModule } from '@angular/material/list'; // <-- ¡Para listas bonitas!
 import { MatIconModule } from '@angular/material/icon'; // <-- ¡Para iconos!
 import { RouterLink } from '@angular/router'; // <-- Para el botón "Volver"
@@ -18,11 +18,11 @@ import { Observable } from 'rxjs';
 export class Scoreboard implements OnInit {
 
   // ¡Una tubería para guardar el historial!
-  public scoreboard$: Observable<SudokuGame[]>;
+  public scoreboard$: Observable<ScoreboardEntry[]>;
 
   constructor(private apiService: Api) {
     // Inicializa la tubería vacía
-    this.scoreboard$ = new Observable<SudokuGame[]>();
+    this.scoreboard$ = new Observable<ScoreboardEntry[]>();
   }
 
   ngOnInit(): void {

@@ -16,9 +16,22 @@ export interface SudokuGame {
   lastUpdatedAt: string; // (las fechas se convierten en strings)
 }
 
+
+
+
+// Esta interfaz coincide con ScoreboardEntryDTO.java
+export interface ScoreboardEntry {
+  id: number;
+  difficulty: string;
+  timeElapsedSeconds: number;
+  lastUpdatedAt: string;
+  userEmail: string; // <-- ¡El campo que el backend está enviando!
+}
+ 
 @Injectable({
   providedIn: 'root'
 })
+
 export class GameStateService {
 
   // 1. Una "tubería" que guarda la partida actual.

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SudokuGame } from './game-state'; 
+import { ScoreboardEntry, SudokuGame } from './game-state'; 
 
 // --- INTERFACES DE AUTENTICACIÓN ---
 
@@ -113,9 +113,9 @@ export class Api {
     return this.http.post<void>(`${this.apiUrl}/sudoku/fail`, {});
   }
   // --- MÉTODO PARA OBTENER EL SCOREBOARD! ---
-  public getScoreboard(): Observable<SudokuGame[]> {
+  public getScoreboard(): Observable<ScoreboardEntry[]> {
     // Llama a GET /api/sudoku/scoreboard
     // Espera un array de objetos SudokuGame
-    return this.http.get<SudokuGame[]>(`${this.apiUrl}/sudoku/scoreboard`);
+    return this.http.get<ScoreboardEntry[]>(`${this.apiUrl}/sudoku/scoreboard`);
   }
 }

@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 import java.util.List;
+import com.logicgames.api.game.dtos.ScoreboardEntryDTO;
+import java.util.stream.Collectors;
+
 
 @Service // Post-it: "Soy un Cerebro (Lógica de Negocio)"
 @RequiredArgsConstructor // Post-it: ¡Crea mi constructor para inyectar mis herramientas!
@@ -320,7 +323,7 @@ public class SudokuService {
      *
      * Obtiene el "Scoreboard" de un usuario.
      */
-    public List<SudokuGame> getScoreboard(String userEmail) {
+    public List<ScoreboardEntryDTO> getScoreboard(String userEmail) {
 
         // 1. Busca al jugador
         User user = userRepository.findByEmail(userEmail)
@@ -330,7 +333,21 @@ public class SudokuService {
         // Le pide a la BBDD todas las partidas "COMPLETED" (que solo
         // pueden ser de modo 'TIMED', gracias a nuestra lógica)
         // y las ordena por tiempo.
-        return sudokuGameRepository.findByUserAndStateOrderByTimeElapsedSecondsAsc(user, "COMPLETED");
+        // 2. Busca las partidas (como antes)
+        List<SudokuGame> completedGames = sudokuGameRepository
+                .findByUserAndStateOrderByTimeElapsedSecondsAsc(user, "COMPLETED");
+
+        // 3. ¡Transforma la lista!
+        // Convierte cada 'SudokuGame' en un 'ScoreboardEntryDTO' plano
+        return completedGames.stream()
+                .map(game -> ScoreboardEntryDTO.builder()
+                        .id(game.getId())
+                        .difficulty(game.getDifficulty())
+                        .timeElapsedSeconds(game.getTimeElapsedSeconds())
+                        .lastUpdatedAt(game.getLastUpdatedAt())
+                        .userEmail(game.getUser().getEmail()) // <-- ¡Obtenemos el email!
+                        .build())
+                .collect(Collectors.toList());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.logicgames.api.game;
 
+import com.logicgames.api.game.dtos.ScoreboardEntryDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,13 +81,11 @@ public class SudokuController {
      * Endpoint para obtener el historial de partidas completadas (scoreboard).
      */
     @GetMapping("/scoreboard")
-    public ResponseEntity<List<SudokuGame>> getScoreboard(Principal principal) {
+    public ResponseEntity<List<ScoreboardEntryDTO>> getScoreboard(Principal principal) {
         String userEmail = principal.getName();
 
         // Llama al "cerebro"
-        List<SudokuGame> scoreboard = sudokuService.getScoreboard(userEmail);
-
-        // Devuelve la lista de partidas como JSON
+        List<ScoreboardEntryDTO> scoreboard = sudokuService.getScoreboard(userEmail); // <-- CAMBIA AQUÍ
         return ResponseEntity.ok(scoreboard);
     }
 }
