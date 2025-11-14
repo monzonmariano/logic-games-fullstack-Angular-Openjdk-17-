@@ -16,11 +16,9 @@
   position: relative;
 }
 
-// --- ESTILOS POR DEFECTO (MÓVIL) ---
-// (Aquí arreglamos la colisión)
+// --- ESTILOS POR DEFECTO (MÓVIL VERTICAL) ---
 
 .user-display {
-  // Ya NO es 'absolute'. Es un bloque normal.
   position: relative; 
   display: flex;
   align-items: center;
@@ -31,16 +29,16 @@
   font-size: 0.9em;
   color: #333;
   z-index: 10;
-  width: 90%;
+  
+  // --- ARREGLO 1 (Caja de Usuario) ---
+  width: auto; // ¡YA NO es 90%! La caja se ajusta al texto.
   max-width: 400px;
-  margin-bottom: 15px; // Espacio entre él y el selector
-  // ¡Lo alineamos a la derecha!
-  align-self: flex-end; 
-  justify-content: flex-end; // Alinea el contenido (icono + texto) a la derecha
+  margin-bottom: 15px;
+  align-self: flex-end; // ¡Esto alinea la caja (ahora pequeña) a la derecha!
+  justify-content: flex-end;
 }
 
 .game-selector {
-  // Ya NO es 'absolute'.
   position: relative;
   width: 90%;
   max-width: 400px;
@@ -101,26 +99,23 @@
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
   }
 
-  // --- ¡ARREGLO DEL BOTÓN PLAY! ---
   .play-button {
     position: absolute;
     top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
-    // ¡Más grande!
     width: 90px;
     height: 90px;
     background: transparent;
-    border: none; // <-- ¡Quitamos el borde blanco feo!
+    border: none; 
     z-index: 2;
 
     mat-icon {
-      // ¡Icono más grande!
       font-size: 55px;
       width: 55px;
       height: 55px;
       color: white;
-      opacity: 0.8; // Un poco sutil
+      opacity: 0.8;
     }
   
     &:hover {
@@ -141,15 +136,17 @@
   max-width: 400px;
 }
 
-// --- ARREGLO PARA PC (PANTALLAS GRANDES) ---
-@media (min-width: 768px) {
+// --- ARREGLO 2 y 3 (PC y Móvil Horizontal) ---
+
+// Solo se aplica si es "Ancho" Y "Alto" (es decir, PC o Tablet Vertical)
+@media (min-width: 768px) and (min-height: 500px) {
   
   // En PC, volvemos al layout 'absolute'
   .user-display {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: auto; // Resetea el ancho
+    width: auto; 
     align-self: auto;
     justify-content: flex-start;
   }
@@ -164,23 +161,24 @@
 
   // ¡Hacemos las tarjetas más grandes en PC!
   .game-swiper-container {
-    max-width: 500px; 
+    max-width: 600px; // <-- ¡Más grande!
   }
 
   .game-card {
-    min-height: 300px;
+    min-height: 350px; // <-- ¡Más grande!
   }
 }
 
-// --- ARREGLO PARA MÓVIL HORIZONTAL ---
-@media (orientation: landscape) and (max-height: 500px) {
+// Solo se aplica si es "Horizontal" Y "Bajo" (Móvil girado)
+@media (orientation: landscape) and (max-height: 499px) {
   
-  // Si la pantalla es horizontal y de poca altura (un móvil)...
+  // Si la pantalla es horizontal y de poca altura...
   .home-container {
     height: auto; // ...deja que el contenido crezca...
     overflow-y: auto; // ...y permite el scroll.
   }
-
-  // (El layout de PC 'absolute' no se activará si el ancho
-  // es menor a 768px, así que el apilado vertical funcionará)
+  
+  // (¡Importante! Como este media query NO cumple la condición
+  // 'min-height: 500px', NO usará los estilos 'absolute' de PC,
+  // y se quedará con el layout "apilado" de móvil, que es lo que queremos)
 }
