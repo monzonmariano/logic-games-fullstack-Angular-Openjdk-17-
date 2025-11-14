@@ -1,10 +1,10 @@
 .home-container {
   display: flex;
   flex-direction: column;
-  justify-content: center; // Centra verticalmente
-  align-items: center;    // Centra horizontalmente
+  justify-content: center;
+  align-items: center;
   height: 100dvh;
-  overflow: hidden; // ¡Sin scroll!
+  overflow: hidden;
   padding: 20px;
   box-sizing: border-box;
   background: #f4f4f4;
@@ -22,33 +22,28 @@
   border-radius: 20px;
   font-size: 0.9em;
   color: #333;
-  z-index: 10; // Encima de todo
+  z-index: 10;
 }
 
-// Le damos estilo al selector como un bloque normal
 .game-selector {
   position: absolute;
   top: 20px;
-  // ¡Ajusta el ancho para que quepa el user-display!
-  width: 60%; 
+  width: 60%;
   max-width: 300px;
-  left: 20px; // Pégalo a la izquierda
+  left: 20px;
 }
 
-// El contenedor del carrusel
 .game-swiper-container {
   width: 100%;
   max-width: 400px;
-  overflow: hidden; // Oculta las otras tarjetas
+  overflow: hidden;
 }
 
-// El "track" que se mueve
 .game-swiper-track {
   display: flex;
-  transition: transform 0.3s ease-in-out; // ¡La animación de swipe!
+  transition: transform 0.3s ease-in-out;
 }
 
-// La tarjeta
 .game-card {
   width: 100%;
   flex-shrink: 0;
@@ -56,32 +51,32 @@
   padding: 20px;
   text-align: center;
   position: relative;
-  min-height: 250px; 
+  min-height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 15px; // ¡Bordes redondeados!
+  border-radius: 15px;
   
   background-size: cover;
   background-position: center;
-  color: white; 
+  color: white;
 
-  // ¡Un "velo" oscuro para que la letra resalte!
+  // Velo oscuro
   &::before {
     content: '';
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.3); // Velo oscuro
+    background: rgba(0, 0, 0, 0.3); // Velo
     border-radius: 15px;
     z-index: 1;
   }
 
-  // --- El Texto "Especial" ---
+  // Texto
   h3, p, .play-button {
-    position: relative; // Pone el texto encima del velo
-    z-index: 2;
+    position: relative;
+    z-index: 2; // Encima del velo
   }
 
   h3 {
@@ -92,21 +87,20 @@
 
   p {
     font-size: 1.1em;
-    // ¡TEXT-SHADOW ARREGLADO!
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); // Corregido
   }
 
   // --- ¡BLOQUE .play-button CORREGIDO! ---
   .play-button {
     position: absolute;
-    top: 60%; 
+    top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 80px;
     height: 80px;
-    background: transparent; 
+    background: transparent;
     border: 2px solid white;
-    z-index: 2; // Asegura que esté sobre el velo
+    z-index: 2;
 
     // Estilos para el icono (deben estar aquí)
     mat-icon {
@@ -122,8 +116,8 @@
       opacity: 1;
     }
   }
+  // --- FIN DEL BLOQUE CORREGIDO ---
 } 
-// ----------------------------------------
 
 // Controles (flechas)
 .swiper-controls {
