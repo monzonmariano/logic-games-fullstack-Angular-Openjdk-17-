@@ -131,16 +131,17 @@ button {
   z-index: 99; // Por debajo del numpad, por encima de todo
 }
 
-/* El contenedor que "flota" */
 .numpad-popup-wrapper {
-  position: fixed; // ¡Cambiado a 'fixed' para que funcione mejor!
-  z-index: 100; // ¡Por encima de todo!
+  position: fixed; // ¡'fixed' es correcto!
+  z-index: 100;    
   
-  // Estilos para que se vea bien
+  // (¡Sin 'top', 'left' o 'transform' aquí! 
+  // El [style] de Angular se encargará)
+  
   background: white;
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  overflow: hidden; // Para que el numpad de dentro respete el borde redondeado
+  overflow: hidden; 
 }
 
 /* --- ESTILOS RESPONSIVOS PARA MÓVIL --- */

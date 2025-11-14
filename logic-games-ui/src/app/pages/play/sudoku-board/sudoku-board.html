@@ -24,10 +24,8 @@
         @for (cell of row; let j = $index; track j) {
 
         <input class="cell" [class.original]="cell.isOriginal" [class.invalid]="invalidCells.has(i + '-' + j)"
-            type="tel" maxlength="1" pattern="[1-9]" [formControlName]="i + '-' + j" 
-            (input)="onCellInput($event, i, j)"
-            (click)="onCellClick($event, i, j)" 
-            readonly>
+            type="tel" maxlength="1" pattern="[1-9]" [formControlName]="i + '-' + j" (input)="onCellInput($event, i, j)"
+            (click)="onCellClick($event, i, j)" readonly>
         }
         }
     </form>
