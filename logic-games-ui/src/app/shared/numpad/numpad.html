@@ -9,7 +9,9 @@
   <button mat-stroked-button (click)="onNumberClick(8)">8</button>
   <button mat-stroked-button (click)="onNumberClick(9)">9</button>
   
-  <button mat-stroked-button class="numpad-clear-popup" (click)="onNumberClick(null)">
-    <mat-icon>close</mat-icon>
-  </button>
+  <div class="numpad-clear-wrapper">
+    <button mat-fab (click)="onNumberClick(null)" color="warn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 </div>

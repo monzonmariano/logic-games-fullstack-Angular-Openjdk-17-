@@ -1,22 +1,36 @@
 .numpad-grid-popup {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: 180px; // Un poco más grande para botones más cómodos
+  width: 180px; 
+  background: white;
   
-  button {
-    min-width: 60px; // 180 / 3
+  // Botones de números
+  button[mat-stroked-button] {
+    min-width: 60px; 
     height: 60px;
     font-size: 1.3rem;
     padding: 0;
     margin: 0;
     border-radius: 0;
-    border-color: #eee; // Un borde suave
+    border: 1px solid #f0f0f0; // Bordes suaves
   }
 
-  .numpad-clear-popup {
-    // ¡EL ARREGLO DEL CENTRADO!
-    // Le dice al botón que ocupe desde la columna 1 a la 4 (es decir, 3 columnas)
-    grid-column: 1 / 4; 
-    border-top: 1px solid #ccc; // Separa el botón de borrar
+  // Contenedor del botón "X"
+  .numpad-clear-wrapper {
+    grid-column: 1 / 4; // Ocupa las 3 columnas
+    
+    // ¡Usa Flexbox para centrar el botón circular!
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px; // Altura de la fila
+    border-top: 1px solid #eee;
+  }
+
+  // El botón "X" (mat-fab)
+  button[mat-fab] {
+    // Más pequeño que la fila para que "flote"
+    width: 45px; 
+    height: 45px;
   }
 }
