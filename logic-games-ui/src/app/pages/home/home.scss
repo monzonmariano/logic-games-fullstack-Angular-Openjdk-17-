@@ -1,46 +1,93 @@
-.lobby-container {
+.home-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
+  height: 100dvh; // ¡Ocupa toda la pantalla!
+  overflow: hidden; // ¡Prohíbe el scroll!
   padding: 20px;
+  box-sizing: border-box;
+  background: #f4f4f4; // Un fondo suave
 }
 
-.welcome-message {
-  font-size: 1.1em;
-  color: #555;
-  margin-bottom: 20px;
+// El "atajo" (dropdown)
+.game-selector {
+  // Se posiciona arriba, fuera del flujo normal
+  position: absolute;
+  top: 20px;
+  width: 90%;
+  max-width: 400px;
 }
 
+// El contenedor del carrusel
+.game-swiper-container {
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden; // Oculta las otras tarjetas
+}
+
+// El "track" que se mueve
+.game-swiper-track {
+  display: flex;
+  transition: transform 0.3s ease-in-out; // ¡La animación de swipe!
+}
+
+// La tarjeta
 .game-card {
   width: 100%;
-  max-width: 500px;
-}
+  flex-shrink: 0; // Evita que la tarjeta se encoja
+  box-sizing: border-box;
+  padding: 20px;
+  text-align: center;
+  position: relative; // Para el botón de Play
+  min-height: 250px; // Damos una altura mínima a la tarjeta
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-.mode-section {
-  padding: 10px 0;
-  
+  h3 {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+
   p {
-    font-size: 0.9em;
-    color: #333;
+    font-size: 1em;
+    color: #666;
+  }
+
+  .play-button {
+    // ¡Tu idea del botón Play!
+    // Lo posicionamos un poco más abajo del centro
+    position: absolute;
+    top: 60%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.4); // El alpha "apagado"
+    border-radius: 50%;
+    
+    mat-icon {
+      font-size: 50px;
+      width: 50px;
+      height: 50px;
+      color: white;
+    }
+
+    // Tu idea del alpha "resaltado"
+    &:hover {
+      background: rgba(0, 0, 0, 0.7);
+      opacity: 1;
+    }
   }
 }
 
-.full-width-button {
-  width: 100%;
-  padding: 15px 0 !important;
-  font-size: 1.1em;
-}
-
-.difficulty-row {
+// Controles (flechas)
+.swiper-controls {
+  margin-top: 20px;
   display: flex;
-  justify-content: space-around; // Espacio uniforme
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-hr {
-  border: none;
-  border-top: 1px solid #eee;
-  margin: 20px 0;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 400px;
 }

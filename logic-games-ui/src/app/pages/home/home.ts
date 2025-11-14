@@ -1,31 +1,52 @@
-import { Component ,OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Api } from '../../services/api';
 import { Router } from '@angular/router';
 
 // ¡Importa el "cerebro" del estado del juego!
-import { GameStateService } from '../../services/game-state'; 
+import { GameStateService } from '../../services/game-state';
 
 // ¡Importa los módulos de Material para la UI!
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @Component({
   selector: 'app-home',
+  standalone: true,
   // ¡Añade los módulos de Material!
-  imports: [CommonModule, MatButtonModule, MatCardModule], 
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatIconModule
+  ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
 export class Home implements OnInit {
-   
+
   public secureMessage = 'Cargando datos secretos...';
 
-   constructor(
+  // ¡La lista de juegos!
+  public games = [
+    { id: 'sudoku', title: 'Sudoku', description: 'El clásico juego de lógica...' },
+    { id: 'wordsearch', title: 'Sopa de Letras', description: 'Próximamente...' },
+    { id: 'crossword', title: 'Palabras Cruzadas', description: 'Próximamente...' }
+  ];
+
+  public currentIndex = 0; // Tarjeta actual
+
+  constructor(
     private apiService: Api,
     private router: Router,
-    private gameState: GameStateService // ¡Inyecta el estado del juego!
-  ) {}
+  
+  ) { }
 
   ngOnInit(): void {
     // Esto está perfecto, carga tu mensaje secreto
@@ -40,25 +61,31 @@ export class Home implements OnInit {
     });
   }
 
-  // ¡El método que llamarán tus botones!
-  playGame(difficulty: string, mode: string) {
-    console.log(`Solicitando partida: ${difficulty} - ${mode}`);
-    
-    // Llama al "plomero" (api.ts)
-    this.apiService.loadOrCreateSudokuGame(difficulty, mode).subscribe({
-      next: (gameData) => {
-        console.log("Datos del juego recibidos:", gameData);
-        
-        // 1. Guarda los datos en la "memoria"
-        this.gameState.setCurrentGame(gameData);
-        
-        // 2. Navega a la página del tablero
-        this.router.navigate(['/play/sudoku']);
-      },
-      error: (err) => {
-        console.error("Error al cargar el juego", err);
-        alert("Error al cargar el juego. Intenta de nuevo.");
-      }
-    });
+  // --- Lógica del Carrusel ---
+  nextGame() {
+    if (this.currentIndex < this.games.length - 1) {
+      this.currentIndex++;
+    }
+  }
+
+  prevGame() {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+    }
+  }
+
+  jumpToGame(index: number) {
+    this.currentIndex = index;
+  }
+  
+  selectGame(game: any) {
+    if (game.id === 'sudoku') {
+      // ¡YA NO jugamos! Ahora navegamos a una NUEVA
+      // pantalla de "lobby" específica para Sudoku.
+      // (Esta página la crearemos en el siguiente paso)
+      this.router.navigate(['/sudoku-lobby']);
+    } else {
+      alert('¡Este juego estará disponible próximamente!');
+    }
   }
 }

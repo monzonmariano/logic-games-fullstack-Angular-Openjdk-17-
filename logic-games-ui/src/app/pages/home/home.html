@@ -1,39 +1,38 @@
-<div class="lobby-container">
-  
-  <div class="welcome-message">
-    {{ secureMessage }}
-  </div>
+<div class="home-container">
 
-  <h2>Elige un Juego</h2>
+  <mat-form-field class="game-selector">
+    <mat-label>Elegir un juego</mat-label>
+    <mat-select (selectionChange)="jumpToGame($event.value)">
+      @for (game of games; track game.id; let i = $index) {
+        <mat-option [value]="i">{{ game.title }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 
-  <mat-card class="game-card">
-    <mat-card-header>
-      <mat-card-title>Sudoku</mat-card-title>
-      <mat-card-subtitle>El clásico juego de lógica de números.</mat-card-subtitle>
-    </mat-card-header>
-    
-    <mat-card-content>
+  <div class="game-swiper-container">
+    <div class="game-swiper-track" 
+         [style.transform]="'translateX(' + (-currentIndex * 100) + '%)'">
       
-      <div class="mode-section">
-        <p>¿Buscas una partida relajada? Juega sin límites.</p>
-        <button mat-raised-button color="primary" class="full-width-button" (click)="playGame('MEDIUM', 'FREE')">
-          Jugar Modo Libre
-        </button>
-      </div>
-
-      <hr>
-
-      <div class="mode-section">
-        <p>¿Buscas un desafío? ¡Supera el reloj!</p>
-        
-        <div class="difficulty-row">
-          <button mat-button (click)="playGame('EASY', 'TIMED')">Fácil (10 min)</button>
-          <button mat-button (click)="playGame('MEDIUM', 'TIMED')">Medio (6 min)</button>
-          <button mat-button (click)="playGame('HARD', 'TIMED')">Difícil (3 min)</button>
+      @for (game of games; track game.id) {
+        <div class="game-card">
+          <h3>{{ game.title }}</h3>
+          <p>{{ game.description }}</p>
+          
+          <button class="play-button" (click)="selectGame(game)">
+            <mat-icon>play_circle_filled</mat-icon>
+          </button>
         </div>
-      </div>
-
-    </mat-card-content>
-  </mat-card>
-  
+      }
+    </div>
   </div>
+
+  <div class="swiper-controls">
+    <button mat-icon-button (click)="prevGame()" [disabled]="currentIndex === 0">
+      <mat-icon>arrow_back_ios</mat-icon>
+    </button>
+    <button mat-icon-button (click)="nextGame()" [disabled]="currentIndex === games.length - 1">
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </button>
+  </div>
+  
+</div>
