@@ -35,23 +35,23 @@ export class Home implements OnInit {
   public secureMessage = 'Cargando datos secretos...';
 
   // ¡La lista de juegos!
- public games = [
-    { 
-      id: 'sudoku', 
-      title: 'Sudoku', 
+  public games = [
+    {
+      id: 'sudoku',
+      title: 'Sudoku',
       description: 'El clásico juego de lógica...',
       // ¡SIN "assets/"!
-      imageUrl: 'url("images/sudoku-card.jpg")' 
+      imageUrl: 'url("images/sudoku-card.jpg")'
     },
-    { 
-      id: 'wordsearch', 
-      title: 'Sopa de Letras', 
+    {
+      id: 'wordsearch',
+      title: 'Sopa de Letras',
       description: 'Próximamente...',
       imageUrl: 'url("images/wordsearch-card.jpg")'
     },
-    { 
-      id: 'crossword', 
-      title: 'Palabras Cruzadas', 
+    {
+      id: 'crossword',
+      title: 'Palabras Cruzadas',
       description: 'Próximamente...',
       imageUrl: 'url("images/crossword-card.jpg")'
     }
@@ -65,8 +65,8 @@ export class Home implements OnInit {
     private apiService: Api,
     private router: Router,
     private authService: AuthService
-  
-  ) {this.userEmail$ = this.authService.currentUserEmail$; }
+
+  ) { this.userEmail$ = this.authService.currentUserEmail$; }
 
   ngOnInit(): void {
     // Esto está perfecto, carga tu mensaje secreto
@@ -83,21 +83,20 @@ export class Home implements OnInit {
 
   // --- Lógica del Carrusel ---
   nextGame() {
-    if (this.currentIndex < this.games.length - 1) {
-      this.currentIndex++;
-    }
+    // El módulo (%) hace que 2 + 1 = 3 -> 3 % 3 = 0 (vuelve al inicio)
+    this.currentIndex = (this.currentIndex + 1) % this.games.length;
   }
 
   prevGame() {
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
-    }
+    // (this.currentIndex - 1 + total) % total
+    // 0 - 1 = -1 -> -1 + 3 = 2 -> 2 % 3 = 2 (salta al final)
+    this.currentIndex = (this.currentIndex - 1 + this.games.length) % this.games.length;
   }
 
   jumpToGame(index: number) {
     this.currentIndex = index;
   }
-  
+
   selectGame(game: any) {
     if (game.id === 'sudoku') {
       // ¡YA NO jugamos! Ahora navegamos a una NUEVA
