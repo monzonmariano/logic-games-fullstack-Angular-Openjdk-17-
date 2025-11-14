@@ -75,7 +75,7 @@
   cursor: pointer; // Muestra la "manito"
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   outline: none; // Evita el "recuadro" de foco al hacer clic
-  
+
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
@@ -129,7 +129,7 @@
     background: transparent;
     border: none; 
     z-index: 2;
-    border: none;
+    pointer-events: none;
 
     mat-icon {
       font-size: 55px;
