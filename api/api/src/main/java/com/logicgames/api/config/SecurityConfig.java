@@ -21,7 +21,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
-    private final AuthenticationProvider authenticationProvider;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,7 +32,12 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
 
                     // ¡PERMITE TODO!
-                    config.setAllowedOrigins(List.of("*"));
+                    //config.setAllowedOrigins(List.of("*"));
+                    // ¡PERMITE SOLO TU FRONTEND!
+                    config.setAllowedOrigins(List.of(
+                            "https://logic-games.netlify.app", // Tu app en Netlify
+                            "http://localhost:4200"         // Tu app local (puerto estándar de Angular)
+                    ));
                     // ------------------------------------
 
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -61,7 +66,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authenticationProvider(authenticationProvider) // Dile a Spring que use tu "gerente"
+
                 // ¡Añade tu filtro "lector de carnets" ANTES del filtro normal de login!
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
