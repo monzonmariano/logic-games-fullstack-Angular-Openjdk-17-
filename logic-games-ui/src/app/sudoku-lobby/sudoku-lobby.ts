@@ -40,7 +40,7 @@ export class SudokuLobby {
         // ¡Guarda el juego en el "cerebro" central!
         this.gameState.setCurrentGame(gameData);
         // ¡Navega al tablero de juego!
-        this.router.navigate(['/play']); // (Asumiendo que tu tablero es '/play')
+        this.router.navigate(['/play/sudoku']); // (Asumiendo que tu tablero es '/play')
       },
       error: (err) => {
         console.error("Error al cargar el juego", err);
