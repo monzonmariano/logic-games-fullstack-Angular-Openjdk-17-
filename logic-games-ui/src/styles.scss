@@ -37,3 +37,15 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Ocupa el 100% del <body>
+}
+
+.main-content-area {
+  flex-grow: 1; // ¡Ocupa todo el espacio restante!
+  overflow-y: auto; // Permite scroll SÓLO si es necesario
+}

@@ -40,29 +40,27 @@ export class Home implements OnInit {
       id: 'sudoku', 
       title: 'Sudoku', 
       description: 'El clásico juego de lógica...',
-      // ¡AÑADE ESTA LÍNEA!
-      imageUrl: 'url("https://source.unsplash.com/random/400x300?sudoku,puzzle")'
+      // ¡SIN "assets/"!
+      imageUrl: 'url("images/sudoku-card.jpg")' 
     },
     { 
       id: 'wordsearch', 
       title: 'Sopa de Letras', 
       description: 'Próximamente...',
-      // ¡AÑADE ESTA LÍNEA!
-      imageUrl: 'url("https://source.unsplash.com/random/400x300?letters,search")'
+      imageUrl: 'url("images/wordsearch-card.jpg")'
     },
     { 
       id: 'crossword', 
       title: 'Palabras Cruzadas', 
       description: 'Próximamente...',
-      // ¡AÑADE ESTA LÍNEA!
-      imageUrl: 'url("https://source.unsplash.com/random/400x300?crossword,pen")'
+      imageUrl: 'url("images/crossword-card.jpg")'
     }
   ];
 
   public currentIndex = 0; // Tarjeta actual
 
   public userEmail$: Observable<string | null>;
-  
+
   constructor(
     private apiService: Api,
     private router: Router,
