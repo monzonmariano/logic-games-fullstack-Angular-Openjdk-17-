@@ -85,7 +85,7 @@ public class SudokuController {
         String userEmail = principal.getName();
 
         // Llama al "cerebro"
-        List<ScoreboardEntryDTO> scoreboard = sudokuService.getScoreboard(userEmail); // <-- CAMBIA AQUÍ
+        List<ScoreboardEntryDTO> scoreboard = sudokuService.getScoreboard(userEmail);
         return ResponseEntity.ok(scoreboard);
     }
 }

@@ -4,6 +4,8 @@ package com.logicgames.api.game;
 import com.logicgames.api.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,10 +25,14 @@ public interface SudokuGameRepository extends  JpaRepository<SudokuGame,Long>{
 
 
 
-    // --- Pregunta 3: Para tu "Tarea de Limpieza" (¡del futuro!) ---
-    // "Borra todas las partidas cuyo 'state' sea X Y
-    // cuya 'lastUpdatedAt' sea anterior a (Before) la fecha Y"
-    // (Este método necesita una anotación @Modifying y @Transactional,
-    // pero lo añadiremos cuando hagamos el servicio de limpieza)
-    // void deleteByStateAndLastUpdatedAtBefore(String state, LocalDateTime cutOffDate);
+    /**
+     * ¡El método del JOB!
+     * Borra partidas que cumplan DOS condiciones:
+     * 1. Su estado es el que le pasemos (ej. "FAILED").
+     * 2. Su última actualización fue ANTES de la fecha límite.
+     */
+    @Modifying
+    @Transactional
+    void deleteByStateAndLastUpdatedAtBefore(String state, LocalDateTime cutOffDate);
+
 }

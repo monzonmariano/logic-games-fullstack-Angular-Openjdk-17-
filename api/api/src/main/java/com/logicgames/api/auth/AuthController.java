@@ -6,13 +6,15 @@ import com.logicgames.api.auth.dtos.AuthenticationResponse;
 import com.logicgames.api.auth.dtos.RegisterRequest;
 import com.logicgames.api.auth.dtos.ResetPasswordRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
-
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @RestController // <-- Post-it: Es un controlador de API
 @RequestMapping("/api/auth") // Todas las rutas aquí empiezan con /api/auth
@@ -65,5 +67,12 @@ public class AuthController {
             // Captura los errores (ej. "Token caducado")
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // Devuelve un error 400 (¡no 403!)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
+        // Devuelve el mensaje de error (ej. "El email ya está en uso")
+        // como el cuerpo de la respuesta.
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

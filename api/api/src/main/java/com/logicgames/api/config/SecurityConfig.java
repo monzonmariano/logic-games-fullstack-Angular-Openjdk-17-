@@ -28,7 +28,7 @@ public class SecurityConfig {
         http
                 //HOla
                 // --- ¡¡LA CONFIGURACIÓN DE CORS DEFINITIVA!! ---
-                .cors(cors -> cors.configurationSource(request -> {
+               /* .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
 
                     // ¡PERMITE TODO!
@@ -36,7 +36,8 @@ public class SecurityConfig {
                     // ¡PERMITE SOLO TU FRONTEND!
                     config.setAllowedOrigins(List.of(
                             "https://logic-games.netlify.app", // Tu app en Netlify
-                            "http://localhost:4200"         // Tu app local (puerto estándar de Angular)
+                            "http://localhost:4200",         // Tu app local (puerto estándar de Angular)
+                            "http://localhost:8081"
                     ));
                     // ------------------------------------
 
@@ -46,6 +47,9 @@ public class SecurityConfig {
 
                     return config;
                 }))
+                */
+                // 1. ¡Le decimos a Spring que NO maneje CORS!
+                .cors(AbstractHttpConfigurer::disable)
 
 
                 .csrf(AbstractHttpConfigurer::disable)

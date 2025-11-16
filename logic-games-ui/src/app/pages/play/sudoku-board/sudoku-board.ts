@@ -46,7 +46,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
   public gameMode: string = 'FREE';
   public isTimeCritical: boolean = false; // ¡Para el titileo!
   public isGameOver: boolean = false;
-
+  private isSaving: boolean = false;
  
 
 
@@ -95,6 +95,18 @@ export class SudokuBoard implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.gameSubscription?.unsubscribe();
     this.timerSubscription?.unsubscribe(); // ¡Importante! Detiene el timer al salir
+    // Si el usuario "abandona" (NO está guardando)
+    // Y la partida NO ha terminado (ni ganada ni perdida)...
+    if (!this.isSaving && !this.isGameOver) {
+      console.log("¡Abandonando partida! Marcando como FAILED.");
+      
+      // ...llama a la API para "cancelar" la partida.
+      // ¡Reutilizamos tu endpoint 'failGame'!
+      this.apiService.failGame().subscribe({
+        next: () => console.log("Partida en progreso borrada."),
+        error: (err) => console.error("Error al borrar partida", err)
+      });
+    }
   }
 
   // --- ¡TEMPORIZADOR "HACIA ARRIBA" (MODO LIBRE)! ---
@@ -343,6 +355,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
 
   // --- 4. ¡NUEVO MÉTODO saveAndQuit()! ---
   saveAndQuit(): void {
+    this.isSaving = true;
     this.timerSubscription?.unsubscribe();
 
     const boardString = this.convertBoardToString(this.boardForm.getRawValue());
