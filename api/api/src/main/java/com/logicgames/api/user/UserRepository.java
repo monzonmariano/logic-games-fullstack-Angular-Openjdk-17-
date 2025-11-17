@@ -2,11 +2,14 @@ package com.logicgames.api.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
-
+@Repository
 public interface UserRepository  extends JpaRepository<User,Long>{
 
     Optional<User> findByEmail(String email);
-    // Spring Data JPA creará la consulta SQL por nosotros
-    Optional<User> findByResetToken(String resetToken);
+    // (Le permite a AuthService.resetPassword funcionar)
+    Optional<User> findByOtpCode(String otpCode);
+
+    Optional<User> findByVerificationToken(String token);
 }

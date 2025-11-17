@@ -10,6 +10,8 @@ import { ResetPassword } from './pages/reset-password/reset-password';
 import { SudokuBoard } from './pages/play/sudoku-board/sudoku-board';
 import { Scoreboard } from './pages/scoreboard/scoreboard';
 import { SudokuLobby } from './sudoku-lobby/sudoku-lobby';
+import { VerifyEmail } from './pages/verify-email/verify-email';
+import { VerifyLink } from './pages/verify-link/verify-link';
 
 export const routes: Routes = [
 
@@ -45,17 +47,25 @@ export const routes: Routes = [
         path: 'reset-password',
         component: ResetPassword
     },
+    {
+        path: 'verify-email', // La ruta a la que te redirige el registro
+        component: VerifyEmail
+    },
     // --- RUTA DE HISTORIAL! ---
-  {
-    path: 'scoreboard', // La URL será /scoreboard
-    component: Scoreboard,
-    canActivate: [authGuard] // ¡Protegida, por supuesto!
-  },
-  { 
-    path: 'sudoku-lobby', 
-    component: SudokuLobby, 
-    canActivate: [authGuard] // <-- Protegida
-  },
+    {
+        path: 'scoreboard', // La URL será /scoreboard
+        component: Scoreboard,
+        canActivate: [authGuard] // ¡Protegida, por supuesto!
+    },
+    {
+        path: 'sudoku-lobby',
+        component: SudokuLobby,
+        canActivate: [authGuard] // <-- Protegida
+    },
+    {
+    path: 'verify-link', // La ruta del enlace del email
+    component: VerifyLink
+  }
 
 
 ];

@@ -1,0 +1,53 @@
+<div class="form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Verifica tu Email</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (userEmail) {
+      <p>
+        ¡Gracias por registrarte! Te hemos enviado un código de 6 dígitos a
+        <strong>{{ userEmail }}</strong>.
+      </p>
+      <p>Por favor, revisa tu email (y tu carpeta de spam) e introduce el código abajo.</p>
+     <!--
+      <p class="simulation-note">
+        <b>Nota de Prueba:</b> El "Modo Simulación" está activo.
+        Revisa la **consola de tu backend (logs)** para ver el código de 6 dígitos.
+      </p>
+
+      -->
+      }
+
+      <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill">
+          <mat-label>Código de 6 Dígitos:</mat-label>
+          <input matInput formControlName="otpCode" placeholder="123456" maxlength="6">
+
+          @if (verifyForm.get('otpCode')?.invalid && verifyForm.get('otpCode')?.touched) {
+          <mat-error>Introduce un código de 6 dígitos válido.</mat-error>
+          }
+        </mat-form-field>
+
+        @if (serverError) {
+        <mat-error class="server-message">{{ serverError }}</mat-error>
+        }
+        @if (serverSuccess) {
+        <div class="server-message success">{{ serverSuccess }}</div>
+        }
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="verifyForm.invalid || isBlocked"> Verificar
+          Cuenta
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-button (click)="onResendCode()" [disabled]="!userEmail">
+        ¿No recibiste el código? Reenviar
+      </button>
+      <a mat-button routerLink="/login">Volver a Login</a>
+    </mat-card-actions>
+  </mat-card>
+</div>

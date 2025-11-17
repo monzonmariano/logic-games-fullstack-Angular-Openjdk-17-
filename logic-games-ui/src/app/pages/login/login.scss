@@ -2,23 +2,84 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px;
+  height: 100%; // Asegura que ocupe el espacio de <main>
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 mat-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 400px; // Limita el ancho para que no se extienda demasiado
+  padding: 20px; // Añade un poco de padding interior
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Sombra suave
+}
+
+mat-card-header {
+  margin-bottom: 20px; // Espacio debajo del título
+  justify-content: center; // Centra el título de la tarjeta
+}
+
+mat-card-title {
+  font-size: 1.8em; // Título un poco más grande
+  font-weight: 600;
+  color: #3f51b5; // Color primario de Material
+}
+
+mat-card-content form {
+  display: flex;
+  flex-direction: column;
 }
 
 mat-form-field {
-  width: 100%;
+  width: 100%; // Ocupa todo el ancho disponible
+  margin-bottom: 15px; // Espacio entre campos
 }
 
-button {
-  width: 100%;
+button[mat-raised-button] {
+  margin-top: 20px; // Espacio arriba del botón principal
+  padding: 10px 0; // Padding vertical para que sea más grande
+  font-size: 1.1em;
 }
 
+// Estilos para el mensaje de error del servidor
+.server-error {
+  color: #f44336; // Rojo de Material Design
+  margin-top: -10px; // Acerca el error al formulario
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+// Estilos para los botones/enlaces de la parte inferior de la tarjeta
 mat-card-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; // Distribuye los elementos en los extremos
+  align-items: center; // Alinea verticalmente si tienen diferentes alturas
+  padding: 10px 0 0 0; // Espacio superior
+
+  button[mat-button],
+  a[mat-button] {
+    font-size: 0.85em; // Un poco más pequeños
+    color: #3f51b5; // Color primario
+    text-transform: none; // Sin mayúsculas automáticas
+    padding: 0 8px; // Padding horizontal más pequeño
+    height: auto; // Altura automática
+    line-height: normal; // Línea normal
+  }
+}
+
+// Para pantallas más pequeñas, apilamos los botones de acción
+@media (max-width: 600px) {
+  mat-card-actions {
+    flex-direction: column;
+    align-items: stretch; // Estira los botones para que ocupen todo el ancho
+    gap: 10px; // Espacio entre los botones
+    
+    button[mat-button],
+    a[mat-button] {
+      width: 100%; // Ocupan todo el ancho
+      text-align: center;
+    }
+  }
 }

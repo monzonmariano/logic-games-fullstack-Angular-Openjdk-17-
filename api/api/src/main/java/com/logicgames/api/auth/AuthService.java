@@ -12,6 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.logicgames.api.util.OtpUtil;
+
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -30,31 +32,34 @@ public class AuthService {
 
     private final EmailService emailService;
 
+    private final OtpUtil otpUtil;
     // Lógica de Registro
+    // en AuthService.java
     public void register(RegisterRequest request) {
-        // 2. Comprobar si el usuario ya existe
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            // Sería mejor lanzar una excepción específica, pero esto funciona
             throw new IllegalStateException("El email ya está en uso");
         }
 
-        // 3. Crear el objeto User (el "molde" de la BBDD)
+        String verificationCode = otpUtil.generateOtp(); // Código de 6 dígitos
+        String verificationLinkToken = UUID.randomUUID().toString(); // Token de enlace
+
         var user = User.builder()
                 .email(request.getEmail())
-                // 4. ¡Encriptar la contraseña ANTES de guardarla!
                 .password(passwordEncoder.encode(request.getPassword()))
+                .isVerified(false)
+                .otpCode(verificationCode) // Guarda el código
+                .otpCodeExpiry(LocalDateTime.now().plusMinutes(15))
+                .verificationToken(verificationLinkToken) // ¡Guarda el token!
+                .verificationTokenExpiry(LocalDateTime.now().plusDays(1)) // Los enlaces duran más
                 .build();
 
-        // 5. Guardar al usuario en la base de datos
         userRepository.save(user);
 
-
+        // ¡Envía AMBAS cosas al EmailService!
+        emailService.sendVerificationEmail(request.getEmail(), verificationCode, verificationLinkToken);
     }
     // --- NUEVO MÉTODO DE LOGIN ---
     public AuthenticationResponse login(AuthenticationRequest request) {
-        // 1. Le pedimos al "Gerente" que autentique al usuario.
-        // Esto comprueba automáticamente si el email existe y si la contraseña es correcta.
-        // Si falla, lanzará una excepción (¡y no continuará!)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -62,15 +67,18 @@ public class AuthService {
                 )
         );
 
-        // 2. Si llegamos aquí, el usuario es VÁLIDO.
-        // Lo buscamos en la BBDD para obtener sus datos.
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(); // Sabemos que existe, así que no necesitamos manejo de error
+                .orElseThrow();
 
-        // 3. Creamos el "carnet" (token) para este usuario.
+        // --- ¡LA NUEVA COMPROBACIÓN! ---
+        if (!user.isVerified()) {
+            // Si no está verificado, ¡lanza un error!
+            // Esto será atrapado por el @ExceptionHandler en AuthController
+            throw new IllegalStateException("Por favor, verifica tu email antes de iniciar sesión.");
+        }
+        // -------------------------------
+
         var jwtToken = jwtService.generateToken(user);
-
-        // 4. Devolvemos la respuesta con el token.
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
@@ -79,61 +87,117 @@ public class AuthService {
 
     // --- SOLICITAR RESETEO DE CONTRASEÑA! ---
     public void requestPasswordReset(String email) {
-
-        // 1. Buscar al usuario por su email
         Optional<User> userOptional = userRepository.findByEmail(email);
-
-        // 2. ¡MUY IMPORTANTE! (Seguridad)
-        // Si el email no existe, NO lanzamos un error.
-        // Simplemente retornamos en silencio.
-        // Esto evita que los hackers "pesquen" emails válidos.
         if (userOptional.isEmpty()) {
-            System.out.println("Solicitud de reseteo para email (no encontrado): " + email);
-            return; // No hacer nada y no dar pistas.
+            return; // ¡Se queda mudo!
         }
 
-        // 3. Generar el "pase" (token). Es un string aleatorio universal.
-        String resetToken = UUID.randomUUID().toString();
-
-        // 4. Establecer la caducidad (ej. 15 minutos desde ahora)
+        String resetCode = otpUtil.generateOtp();
         LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
 
-        // 5. Actualizar el usuario en la BBDD
         User user = userOptional.get();
-        user.setResetToken(resetToken);
-        user.setResetTokenExpiry(expiryDate);
+        user.setOtpCode(resetCode); // <-- Campo renombrado
+        user.setOtpCodeExpiry(expiryDate); // <-- Campo renombrado
 
         userRepository.save(user);
 
-        // --- 6. SIMULACIÓN DE ENVÍO DE EMAIL ---
-        // En un proyecto real, aquí llamaríamos a:
-        // emailService.sendResetLink(user.getEmail(), resetToken);
-        //
-
-        emailService.sendResetLink(user.getEmail(), resetToken);
+        // ¡Ahora envía el CÓDIGO, no el enlace!
+        emailService.sendPasswordResetCode(user.getEmail(), resetCode);
     }
 
     // --- MÉTODO PARA EJECUTAR EL RESETEO! ---
     public void resetPassword(ResetPasswordRequest request) {
 
-        // 1. Busca al usuario usando el token
-        User user = userRepository.findByResetToken(request.getToken())
-                .orElseThrow(() -> new IllegalStateException("Token inválido o no encontrado"));
+        // 1. Busca al usuario por el CÓDIGO (¡no por el token!)
+        User user = userRepository.findByOtpCode(request.getToken()) // ¡Necesitaremos crear este método!
+                .orElseThrow(() -> new IllegalStateException("Código inválido o no encontrado"));
 
-        // 2. Comprueba si el token ha caducado
-        if (user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("El token de reseteo ha caducado");
+        // 2. Comprueba si ha caducado
+        if (user.getOtpCodeExpiry().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("El código de reseteo ha caducado");
         }
 
-        // 3. ¡Todo en orden! Hashea la nueva contraseña
+        // 3. Hashea la nueva contraseña
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
-        // 4. ¡MUY IMPORTANTE! Invalida el token
-        //    Poniéndolo a null, no se puede volver a usar.
-        user.setResetToken(null);
-        user.setResetTokenExpiry(null);
+        // 4. Invalida el código
+        user.setOtpCode(null);
+        user.setOtpCodeExpiry(null);
 
-        // 5. Guarda el usuario con su nueva contraseña
         userRepository.save(user);
+    }
+
+    public void verifyEmail(String email, String otpCode) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+
+        // 1. Comprueba si ya está verificado
+        if (user.isVerified()) {
+            throw new IllegalStateException("Este email ya ha sido verificado.");
+        }
+
+        // 2. Comprueba si el código es correcto
+        if (user.getOtpCode() == null || !user.getOtpCode().equals(otpCode)) {
+            throw new IllegalStateException("El código de verificación es incorrecto.");
+        }
+
+        // 3. Comprueba si ha caducado
+        if (user.getOtpCodeExpiry().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("El código de verificación ha caducado.");
+        }
+
+        // 4. ¡Todo bien! Verifica al usuario
+        user.setVerified(true);
+        user.setOtpCode(null); // Invalida el código
+        user.setOtpCodeExpiry(null);
+
+        userRepository.save(user);
+    }
+
+    // --- MÉTODO PARA EL ENLACE! ---
+    public void verifyEmailLink(String token) {
+        // Busca al usuario por el token del enlace
+        User user = userRepository.findByVerificationToken(token) // <-- ¡Tendremos que crear esto!
+                .orElseThrow(() -> new IllegalStateException("Enlace de verificación inválido o no encontrado."));
+
+        // Comprueba si ha caducado
+        if (user.getVerificationTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("El enlace de verificación ha caducado. Por favor, solicita uno nuevo.");
+        }
+
+        // ¡Todo bien! Verifica al usuario
+        user.setVerified(true);
+        user.setOtpCode(null); // Invalida ambos
+        user.setOtpCodeExpiry(null);
+        user.setVerificationToken(null);
+        user.setVerificationTokenExpiry(null);
+
+        userRepository.save(user);
+        // ¡En este punto, el frontend debería redirigir al login!
+    }
+    // (Llamado por AuthController) ---
+    public void resendVerificationCode(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+
+        if (user.isVerified()) {
+            throw new IllegalStateException("Este email ya ha sido verificado.");
+        }
+
+        // --- ¡LA NUEVA LÓGICA! ---
+        // 1. Genera AMBOS, un nuevo código Y un nuevo enlace
+        String newVerificationCode = otpUtil.generateOtp();
+        String newVerificationLinkToken = UUID.randomUUID().toString();
+
+        // 2. Actualiza el usuario con AMBOS valores nuevos
+        user.setOtpCode(newVerificationCode);
+        user.setOtpCodeExpiry(LocalDateTime.now().plusMinutes(15));
+        user.setVerificationToken(newVerificationLinkToken); // <-- ¡Añade esto!
+        user.setVerificationTokenExpiry(LocalDateTime.now().plusDays(1)); // <-- ¡Añade esto!
+
+        userRepository.save(user);
+
+        // 3. ¡Llama al método EmailService correcto con 3 argumentos!
+        emailService.sendVerificationEmail(email, newVerificationCode, newVerificationLinkToken);
     }
 }

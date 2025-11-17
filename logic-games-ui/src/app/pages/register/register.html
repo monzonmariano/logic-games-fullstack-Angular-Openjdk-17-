@@ -1,6 +1,9 @@
 <div class="form-container">
   <mat-card>
     <mat-card-header>
+      @if (serverError) {
+          <mat-error class="server-error">{{ serverError }}</mat-error>
+        }
       <mat-card-title>Crear Cuenta</mat-card-title>
     </mat-card-header>
 

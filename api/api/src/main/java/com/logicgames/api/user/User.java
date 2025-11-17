@@ -30,11 +30,17 @@ public class User implements UserDetails{
     @Column(nullable = false)
     private String password; // ¡Guardaremos la contraseña encriptada!
 
-    // El "pase de un solo uso"
-    private String resetToken;
+    // (Por defecto será 'false' cuando se cree)
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isVerified;
+    //
+    // --- Para el código de 6 dígitos ---
+    private String otpCode;
+    private LocalDateTime otpCodeExpiry;
 
-    // La fecha en que el "pase" caduca
-    private LocalDateTime resetTokenExpiry;
+    // --- Para el enlace ---
+    private String verificationToken;
+    private LocalDateTime verificationTokenExpiry;
 
     // --- Métodos de UserDetails ---
     // UserDetails es el "carnet" que Spring Security sabe leer.

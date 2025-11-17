@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core'; // <-- Añade OnInit
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule ,FormBuilder,Validators,AbstractControl} from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,23 +9,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 
-// Es una simple función. Recibe el "formulario" como argumento.
+// Tu validador de contraseña (¡perfecto!)
 function passwordMatchValidator(control: AbstractControl) {
-  // Obtenemos los valores de los dos campos
   const password = control.get('password')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;
-
-  // Si las contraseñas no coinciden...
   if (password !== confirmPassword) {
-    // ...devolvemos un objeto de error.
     return { passwordMismatch: true };
   } else {
-    // ...si coinciden, no devolvemos nada (null).
     return null;
   }
 }
-
-
 
 @Component({
   selector: 'app-register',
@@ -40,29 +33,21 @@ function passwordMatchValidator(control: AbstractControl) {
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-
-export class Register {
+export class Register implements OnInit { // <-- Implementa OnInit
    
     registerForm;
     
+    // --- ¡NUEVA VARIABLE PARA ERRORES! ---
+    public serverError: string | null = null;
+    
     private emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    // --- 1. ¡LA NUEVA REGLA (RegEx) PARA CONTRASEÑAS! ---
-  // Desglose:
-  // (?=.*[a-z]) -> "Debe tener al menos una minúscula"
-  // (?=.*[A-Z]) -> "Debe tener al menos una mayúscula"
-  // (?=.*\d) -> "Debe tener al menos un número"
-  // (?=.*[$@!%*?&]) -> "Debe tener al menos un caracter especial"
-  // [A-Za-z\d$@!%*?&] -> (Esto es opcional, define los caracteres permitidos)
-  private passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!%*?&]).{8,}$/;
+    private passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!%*?&]).{8,}$/;
 
     constructor(
       private fb: FormBuilder,
       private apiService: Api,
       private router: Router
-    )
-      
-      {
-      
+    ) {
      this.registerForm = this.fb.group({
          email:['',[Validators.required,Validators.pattern(this.emailPattern)]],
          password:['',[
@@ -70,44 +55,54 @@ export class Register {
           Validators.minLength(8),
           Validators.pattern(this.passwordPattern)         
         ]],
-
-
-
-
          confirmPassword:['',Validators.required]
      },{
          validators: [passwordMatchValidator]
      });
-    
+    }
+
+    ngOnInit(): void {
+      // ¡Buena UX! Si el usuario empieza a escribir de nuevo,
+      // borra el error del servidor.
+      this.registerForm.valueChanges.subscribe(() => {
+        this.serverError = null;
+      });
     }
 
     onSubmit() {
-    // Si el formulario no es válido, no hagas nada.
-    if (this.registerForm.invalid) {
-      return;
+      if (this.registerForm.invalid) {
+        return;
+      }
+      
+      // Limpia errores viejos antes de enviar
+      this.serverError = null; 
+
+      this.apiService.register(this.registerForm.value)
+        .subscribe({ 
+          
+          // --- ¡CAMBIO DE FASE 2! (Éxito) ---
+          next: () => {
+            // ¡Éxito! El backend envió el email.
+            // Ahora, redirige a la página de verificación,
+            // pasando el email en la URL.
+            const email = this.registerForm.value.email;
+            this.router.navigate(['/verify-email'], { 
+              queryParams: { email: email } 
+            });
+          },
+          
+          // --- ¡CAMBIO DE FASE 1! (Error) ---
+          error: (err) => {
+            console.error('Error en el registro:', err);
+            
+            // El backend (AuthController) nos da el mensaje de error.
+            // (ej. "El email ya está en uso")
+            if (err.status === 400) { // 400 = Bad Request
+              this.serverError = err.error; // err.error contiene el string de texto
+            } else {
+              this.serverError = 'Ocurrió un error inesperado. Por favor, intente más tarde.';
+            }
+          }
+        });
     }
-
-   // console.log("Enviando al backend:", this.registerForm.value);
-
-    
-    
-    this.apiService.register(this.registerForm.value)
-      .subscribe({ 
-        
-        // 3. 'next' es lo que pasa si todo va BIEN
-        next: () => {
-        
-          alert('¡Usuario registrado exitosamente!');
-          // 4. ¡Usa el "GPS" para enviar al usuario al login!
-          this.router.navigate(['/login']); 
-        },
-        
-        // 5. 'error' es lo que pasa si el backend da un error
-        error: (err) => {
-          console.error('Error en el registro:', err);
-          // (Aquí podríamos mostrar un mensaje de error al usuario, 
-          // ej: "El email ya está en uso")
-        }
-      });
-  }
 }

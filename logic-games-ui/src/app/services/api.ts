@@ -25,6 +25,10 @@ export interface ResetPasswordRequest {
   newPassword?: string | null;
 }
 
+export interface VerifyEmailRequest {
+  email: string;
+  otpCode: string;
+}
 // --- INTERFACES PARA EL JUEGO! ---
 
 // Para POST /api/sudoku/save (coincide con SaveGameRequest.java)
@@ -81,7 +85,31 @@ export class Api {
       responseType: 'text'
     });
   }
+  
+  // (Para la página de verificación)
+  public verifyEmail(request: VerifyEmailRequest): Observable<string> {
+    // Llama al endpoint que creamos en AuthController
+    return this.http.post(`${this.apiUrl}/auth/verify-email`, request, { 
+      responseType: 'text' 
+    });
+  }
 
+  public resendVerificationCode(email: string): Observable<string> {
+    const body = { email: email };
+    // Llama al endpoint que creamos en AuthController
+    return this.http.post(`${this.apiUrl}/auth/resend-verification`, body, {
+      responseType: 'text'
+    });
+  }
+
+  // (Para la página de "clic en enlace")
+  public verifyEmailLink(token: string): Observable<string> {
+    // Llama al endpoint GET que creamos en AuthController
+    return this.http.get(`${this.apiUrl}/auth/verify-email-link`, {
+      params: { token: token },
+      responseType: 'text'
+    });
+  }
   // --- MÉTODOS DE SUDOKU ---
    
   

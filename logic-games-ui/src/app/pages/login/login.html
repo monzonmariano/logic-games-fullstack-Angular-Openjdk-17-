@@ -8,29 +8,24 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
         <mat-form-field appearance="fill">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" placeholder="tu@email.com">
-          
+          <mat-label>Email:</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="tu@email.com">
           @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <mat-error>
-              @if (loginForm.get('email')?.errors?.['required']) {
-                El email es obligatorio.
-              }
-              @if (loginForm.get('email')?.errors?.['pattern']) {
-                Email inválido.
-              }
-            </mat-error>
+            <mat-error>Por favor, introduce un email válido.</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="fill">
-          <mat-label>Contraseña</mat-label>
-          <input matInput formControlName="password" type="password">
+          <mat-label>Contraseña:</mat-label>
+          <input matInput type="password" formControlName="password">
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
             <mat-error>La contraseña es obligatoria.</mat-error>
           }
         </mat-form-field>
-
+        
+        @if (serverError) {
+          <mat-error class="server-error">{{ serverError }}</mat-error>
+        }
         <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
           Iniciar Sesión
         </button>
@@ -38,8 +33,14 @@
     </mat-card-content>
 
     <mat-card-actions>
-      <a mat-button routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
-      <a mat-button routerLink="/register">Crear una cuenta</a>
-    </mat-card-actions>
+      
+      @if (isNotVerifiedError) {
+        <button mat-button (click)="onResendCode()">Reenviar código</button>
+        <button mat-button (click)="goToVerification()">Usar código</button>
+      } @else {
+        <a mat-button routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
+        <a mat-button routerLink="/register">Crear una cuenta</a>
+      }
+      </mat-card-actions>
   </mat-card>
 </div>

@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-scoreboard',
   standalone: true,
   // ¡Añade los nuevos módulos!
-  imports: [CommonModule, MatListModule, MatIconModule, RouterLink,MatButtonModule],
+  imports: [CommonModule, MatListModule, MatIconModule,MatButtonModule],
   templateUrl: './scoreboard.html',
   styleUrl: './scoreboard.scss'
 })

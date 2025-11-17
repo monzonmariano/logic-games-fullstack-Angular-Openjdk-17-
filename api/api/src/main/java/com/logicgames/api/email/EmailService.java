@@ -18,60 +18,80 @@ import java.io.IOException;
 public class EmailService {
 
     @Value("${app.sendgrid.api-key}")
-    private String apiKey;
+    private String sendGridApiKey;
 
     @Value("${APP_FRONTEND_URL}")
     private String frontendBaseUrl;
 
-    // (Asegúrate de cambiar esto a tu email verificado en SendGrid)
-    private String fromEmail = "monzonmariano1@gmail.com";
-    private String fromName = "Equipo de LogicGames";
+    private final String FROM_EMAIL = "monzonmariano1@gmail.com";
 
     private SendGrid sendGridClient;
 
-    @PostConstruct
-    public void init() {
-        // 1. ¡Crea el cliente! (Así de simple)
-        this.sendGridClient = new SendGrid(apiKey);
+    public void sendVerificationEmail(String toEmail, String code, String linkToken) {
+        String subject = "¡Bienvenido a LogicGames! Confirma tu cuenta";
+
+        // ¡La URL a la que irá el enlace! (La crearemos en el frontend)
+        String verificationLink = frontendBaseUrl + "/verify-link?token=" + linkToken;
+
+        String contentBody = "¡Gracias por registrarte! <br>"
+                + "Tu código de verificación de 6 dígitos es: "
+                + "<h1>" + code + "</h1>"
+                + "<p>O, si lo prefieres, activa tu cuenta haciendo clic en el enlace de abajo:</p>"
+                + "<a href='" + verificationLink + "' target='_blank'>Activar mi Cuenta</a>"
+                + "<p>Si no te has registrado, por favor ignora este email.</p>";
+
+        // El modo simulación ahora imprimirá AMBAS cosas
+        sendEmail(toEmail, subject, contentBody, code, verificationLink);
     }
 
-    public void sendResetLink(String toEmail, String token) {
+    // --- ¡NUEVO MÉTODO 2! (Para recuperar contraseña) ---
+    public void sendPasswordResetCode(String toEmail, String code) {
+        String subject = "Tu código de reseteo de contraseña de LogicGames";
+        String contentBody = "Hemos recibido una solicitud para resetear tu contraseña. Tu código de 6 dígitos es: "
+                + "<h1>" + code + "</h1>"
+                + "<p>Introduce este código en la app para establecer una nueva contraseña.</p>"
+                + "<p>Si no has solicitado esto, puedes ignorar este email.</p>";
 
-        // 2. Define el remitente y el destinatario
-        Email from = new Email(fromEmail, fromName);
+        sendEmail(toEmail, subject, contentBody, code);
+    }
+
+    /**
+     * Método "helper" privado que construye y envía el email.
+     */
+    private void sendEmail(String toEmail, String subject, String contentBody, String... debugInfo) {
+        // --- ¡MODO SIMULACIÓN (CORREGIDO)! ---
+        // Ahora SÍ comprobará la clave del .env
+        if (sendGridApiKey == null || sendGridApiKey.equals("SG.FAKE.test_key")) {
+            System.out.println("--- MODO SIMULACIÓN DE EMAIL ---");
+            System.out.println("A: " + toEmail);
+            System.out.println("Asunto: " + subject);
+            for (String info : debugInfo) {
+                System.out.println("¡DATO DE DEBUG!: " + info);
+            }
+            System.out.println("---------------------------------");
+            return;
+        }
+
+        // --- Lógica real de SendGrid ---
+        Email from = new Email(FROM_EMAIL);
         Email to = new Email(toEmail);
+        Content content = new Content("text/html", contentBody);
+        Mail mail = new Mail(from, subject, to, content);
 
-        // 3. Define el contenido (¡HTML!)
-        //String resetUrl = "http://localhost:4200/reset-password?token=" + token;
-        // 3. Define la URL de reseteo (¡AHORA USA LA VARIABLE INYECTADA!)
-        String resetUrl = this.frontendBaseUrl + "/reset-password?token=" + token;
-        String htmlContent = "<html><body>" +
-                "<h1>¡Hola!</h1>" +
-                "<p>Hemos recibido una solicitud para resetear tu contraseña.</p>" +
-                "<a href=\"" + resetUrl + "\">Haz clic aquí para resetear tu contraseña</a>" +
-                "<p>Si no solicitaste esto, ignora este email.</p>" +
-                "</body></html>";
-
-        Content content = new Content("text/html", htmlContent);
-
-        // 4. Crea el "sobre" del email
-        Mail mail = new Mail(from, "Resetea tu contraseña de LogicGames", to, content);
-
-        // 5. ¡Envía el email!
+        SendGrid sg = new SendGrid(sendGridApiKey);
         Request request = new Request();
+
         try {
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
+            sg.api(request);
 
-            Response response = this.sendGridClient.api(request);
+            System.out.println("Email enviado exitosamente a: " + toEmail);
 
-            System.out.println("Email de reseteo enviado a: " + toEmail);
-            System.out.println("Status de SendGrid: " + response.getStatusCode());
-
-        } catch (IOException e) {
-            System.err.println("Error al enviar email: " + e.getMessage());
-            e.printStackTrace();
+        } catch (IOException ex) {
+            System.err.println("Error al enviar email: " + ex.getMessage());
+            throw new RuntimeException("Error al enviar email", ex);
         }
     }
 }
