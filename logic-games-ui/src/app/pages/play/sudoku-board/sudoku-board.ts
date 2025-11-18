@@ -48,7 +48,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
   public isGameOver: boolean = false;
   private isSaving: boolean = false;
 
-
+  private messageTimer: any;
 
   // --- VARIABLES DE ESTADO PARA EL POP-UP! ---
   public isNumpadOpen: boolean = false;
@@ -107,6 +107,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
         error: (err) => console.error("Error al borrar partida", err)
       });
     }
+    if (this.messageTimer) clearTimeout(this.messageTimer);
   }
 
   // --- ¡TEMPORIZADOR "HACIA ARRIBA" (MODO LIBRE)! ---
@@ -315,20 +316,22 @@ export class SudokuBoard implements OnInit, OnDestroy {
   // ---  ---
   checkSolution(): void {
     if (this.invalidCells.size > 0) {
-      this.gameMessage = "¡Revisa las celdas rojas! Tienes errores.";
+      // Usa la nueva función (3 segundos)
+      this.showMessage("¡Revisa las celdas rojas! Tienes errores.", 3000); 
       return;
     }
 
     const userSolutionString = this.convertBoardToString(this.boardForm.getRawValue());
 
-    // ¡Comprobación rápida en el frontend!
     if (userSolutionString !== this.solutionString) {
-      this.gameMessage = "Todo parece bien, pero la solución aún no es correcta. ¡Sigue así!";
+      // Usa la nueva función
+      this.showMessage("La solución aún no es correcta. ¡Sigue intentando!", 3000);
       return;
     }
 
-    // ¡El frontend cree que ganamos! Verifiquemos con el backend.
     this.gameMessage = "¡Solución correcta! Comprobando con el servidor...";
+    // (Aquí no usamos timeout todavía porque estamos esperando al servidor)
+
     const request: SudokuSolutionRequest = {
       boardString: userSolutionString,
       timeElapsedSeconds: this.timeElapsed
@@ -337,22 +340,23 @@ export class SudokuBoard implements OnInit, OnDestroy {
     this.apiService.completeGame(request).subscribe({
       next: (didWin) => {
         if (didWin) {
-          this.gameMessage = "¡¡FELICIDADES, HAS GANADO!! 🏆";
-          this.timerSubscription?.unsubscribe(); // ¡Detiene el timer!
-          this.boardForm.disable(); // Deshabilita el tablero
+          // ¡SI GANA, LO DEJAMOS MÁS TIEMPO! (Ej. 5 o 10 segundos, o fijo)
+          // Como el juego termina, el botón se desactiva, así que no molesta tanto.
+          this.showMessage("¡¡FELICIDADES, HAS GANADO!! 🏆", 6000); 
+          
+          this.timerSubscription?.unsubscribe();
+          this.boardForm.disable();
           this.isGameOver = true;
         } else {
-          // Esto no debería pasar si nuestra lógica es igual
-          this.gameMessage = "Error del servidor. Intenta de nuevo.";
+           this.showMessage("Error del servidor. Intenta de nuevo.", 3000);
         }
       },
       error: (err) => {
-        console.error("Error al comprobar la solución", err);
-        this.gameMessage = "Error al conectar con el servidor.";
+        console.error("Error al comprobar", err);
+        this.showMessage("Error al conectar con el servidor.", 3000);
       }
     });
   }
-
   // --- 4. ¡NUEVO MÉTODO saveAndQuit()! ---
   saveAndQuit(): void {
     this.isSaving = true;
@@ -424,7 +428,23 @@ export class SudokuBoard implements OnInit, OnDestroy {
       this.isNumpadOpen = true;
     }
   }
+ 
 
+  private showMessage(message: string, duration: number = 3000): void {
+    // A. Si ya había un timer corriendo (mensaje anterior), cancélalo
+    if (this.messageTimer) {
+      clearTimeout(this.messageTimer);
+    }
+
+    // B. Muestra el mensaje
+    this.gameMessage = message;
+
+    // C. Inicia la cuenta atrás para borrarlo
+    this.messageTimer = setTimeout(() => {
+      this.gameMessage = ''; // ¡Borra el mensaje! (Angular lo quita del DOM)
+      this.messageTimer = null;
+    }, duration);
+  }
   public onNumpadInput(value: number | null): void {
     if (!this.activeCellKey) {
       return;
