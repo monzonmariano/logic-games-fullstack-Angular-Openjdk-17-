@@ -31,17 +31,25 @@ public class User implements UserDetails{
     private String password; // ¡Guardaremos la contraseña encriptada!
 
     // (Por defecto será 'false' cuando se cree)
+    // --- PARA VERIFICACIÓN DE EMAIL ---
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean isVerified;
-    //
-    // --- Para el código de 6 dígitos ---
-    private String otpCode;
-    private LocalDateTime otpCodeExpiry;
 
-    // --- Para el enlace ---
+    @Column(name = "verification_code") // Renombramos la columna
+    private String verificationCode; // <-- Renombrado de 'otpCode'
+
+    @Column(name = "verification_code_expiry")
+    private LocalDateTime verificationCodeExpiry; // <-- Renombrado de 'otpCodeExpiry'
+
     private String verificationToken;
     private LocalDateTime verificationTokenExpiry;
 
+    // --- ¡NUEVO! PARA RESETEO DE CONTRASEÑA ---
+    private String resetCode; // <-- ¡El nuevo campo que faltaba!
+    private LocalDateTime resetCodeExpiry;
+
+    private String resetToken; // Para el enlace de reseteo
+    private LocalDateTime resetTokenExpiry;
     // --- Métodos de UserDetails ---
     // UserDetails es el "carnet" que Spring Security sabe leer.
     // Le "traducimos" nuestro 'User' a lo que Spring Security entiende.

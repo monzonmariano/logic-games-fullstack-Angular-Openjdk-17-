@@ -55,6 +55,23 @@ public class EmailService {
         sendEmail(toEmail, subject, contentBody, code);
     }
 
+    // --- ¡NUEVO MÉTODO DE RESETEO! ---
+    public void sendPasswordResetEmail(String toEmail, String code, String linkToken) {
+        String subject = "Tu solicitud de reseteo de contraseña de LogicGames";
+
+        // ¡La URL a la que irá el enlace! (Apunta a tu componente existente)
+        String resetLink = frontendBaseUrl + "/reset-password?token=" + linkToken;
+
+        String contentBody = "Has solicitado resetear tu contraseña.<br>"
+                + "Tu código de 6 dígitos es: "
+                + "<h1>" + code + "</h1>"
+                + "<p>Introduce este código en la app para continuar.</p>"
+                + "<p>O, si lo prefieres, haz clic en el enlace de abajo:</p>"
+                + "<a href='" + resetLink + "' target='_blank'>Resetear mi Contraseña</a>"
+                + "<p>Si no has solicitado esto, puedes ignorar este email.</p>";
+
+        sendEmail(toEmail, subject, contentBody, code, resetLink);
+    }
     /**
      * Método "helper" privado que construye y envía el email.
      */

@@ -2,6 +2,7 @@ package com.logicgames.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -55,6 +56,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/verify-email").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/resend-verification").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/verify-email-link").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/reset-password-link").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/reset-password-code").permitAll()
                         // Todo lo demás, bloqueado
                         .anyRequest().authenticated()
                 )

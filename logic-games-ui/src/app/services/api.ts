@@ -43,6 +43,11 @@ export interface SudokuSolutionRequest {
   timeElapsedSeconds: number;
 }
 
+export interface ResetPasswordWithCodeRequest {
+  email: string;
+  otpCode: string;
+  newPassword?: string; // (o string | null si prefieres)
+}
 
 @Injectable({
   providedIn: 'root'
@@ -107,6 +112,13 @@ export class Api {
     // Llama al endpoint GET que creamos en AuthController
     return this.http.get(`${this.apiUrl}/auth/verify-email-link`, {
       params: { token: token },
+      responseType: 'text'
+    });
+  }
+ 
+
+  public resetPasswordWithCode(request: ResetPasswordWithCodeRequest): Observable<string> {
+    return this.http.post(`${this.apiUrl}/auth/reset-password-code`, request, { // endpoint nuevo
       responseType: 'text'
     });
   }

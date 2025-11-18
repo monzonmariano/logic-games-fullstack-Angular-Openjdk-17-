@@ -12,6 +12,7 @@ import { Scoreboard } from './pages/scoreboard/scoreboard';
 import { SudokuLobby } from './sudoku-lobby/sudoku-lobby';
 import { VerifyEmail } from './pages/verify-email/verify-email';
 import { VerifyLink } from './pages/verify-link/verify-link';
+import { EnterResetCode } from './pages/enter-reset-code/enter-reset-code';
 
 export const routes: Routes = [
 
@@ -63,9 +64,11 @@ export const routes: Routes = [
         canActivate: [authGuard] // <-- Protegida
     },
     {
-    path: 'verify-link', // La ruta del enlace del email
-    component: VerifyLink
-  }
+        path: 'verify-link', // La ruta del enlace del email
+        component: VerifyLink
+    },
+    { path: 'enter-reset-code', component: EnterResetCode }
+    ,
 
 
 ];

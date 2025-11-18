@@ -1,10 +1,7 @@
 package com.logicgames.api.auth;
 
 
-import com.logicgames.api.auth.dtos.AuthenticationRequest;
-import com.logicgames.api.auth.dtos.AuthenticationResponse;
-import com.logicgames.api.auth.dtos.RegisterRequest;
-import com.logicgames.api.auth.dtos.ResetPasswordRequest;
+import com.logicgames.api.auth.dtos.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.logicgames.api.auth.dtos.VerifyEmailRequest;
-
 
 
 @RestController // <-- Post-it: Es un controlador de API
@@ -106,5 +101,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @PostMapping("/reset-password-code")
+    public ResponseEntity<String> resetPasswordWithCode(@RequestBody ResetPasswordWithCodeRequest request) {
+        authService.resetPasswordWithCode(request.getEmail(), request.getOtpCode(), request.getNewPassword());
+        return ResponseEntity.ok("Contraseña actualizada exitosamente.");
     }
 }
