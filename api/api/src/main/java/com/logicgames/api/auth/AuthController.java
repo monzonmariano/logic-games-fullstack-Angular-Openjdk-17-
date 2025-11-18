@@ -2,6 +2,10 @@ package com.logicgames.api.auth;
 
 
 import com.logicgames.api.auth.dtos.*;
+import com.logicgames.api.config.RateLimitingService;
+import io.github.bucket4j.Bucket;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +26,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthController {
 
     private final AuthService authService;
-
+    private final RateLimitingService rateLimitingService;
     // Escucha peticiones POST en /api/auth/register
     @PostMapping("/register")
     public ResponseEntity<String> register(
-            @RequestBody RegisterRequest request // @RequestBody convierte el JSON en el objeto
+            @Valid @RequestBody RegisterRequest request // @RequestBody convierte el JSON en el objeto
     ) {
         authService.register(request);
         return ResponseEntity.ok("Usuario registrado exitosamente");
@@ -70,17 +74,26 @@ public class AuthController {
     }
 
 
-    // --- ¡NUEVO ENDPOINT 1! (Para verificar el código de registro) ---
+    // - (Para verificar el código de registro) ---
+    // Inyecta HttpServletRequest request para obtener la IP
     @PostMapping("/verify-email")
-    public ResponseEntity<String> verifyEmail(
-            @RequestBody VerifyEmailRequest request
-    ) {
-        // (La lógica try/catch se manejará con el ExceptionHandler)
-        authService.verifyEmail(request.getEmail(), request.getOtpCode());
-        return ResponseEntity.ok("¡Email verificado exitosamente!");
+    public ResponseEntity<String> verifyEmail(@RequestBody VerifyEmailRequest req, HttpServletRequest request) {
+
+        String ip = request.getRemoteAddr();
+        Bucket bucket = rateLimitingService.resolveBucket(ip);
+
+        if (bucket.tryConsume(1)) {
+            // Tiene fichas, procede normal
+            authService.verifyEmail(req.getEmail(), req.getOtpCode());
+            return ResponseEntity.ok("Verificado");
+        } else {
+            // No tiene fichas
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body("Has excedido el límite de intentos. Inténtalo en 1 hora.");
+        }
     }
 
-    // --- ¡NUEVO ENDPOINT 2! (Para reenviar el código) ---
+    //  (Para reenviar el código) ---
     @PostMapping("/resend-verification")
     public ResponseEntity<String> resendVerificationCode(
             @RequestBody Map<String, String> request // Reutiliza el Map

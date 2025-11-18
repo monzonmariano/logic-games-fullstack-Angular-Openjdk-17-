@@ -57,7 +57,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/resend-verification").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/verify-email-link").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/reset-password-link").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/reset-password-code").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/reset-password-code").permitAll()
                         // Todo lo demás, bloqueado
                         .anyRequest().authenticated()
                 )

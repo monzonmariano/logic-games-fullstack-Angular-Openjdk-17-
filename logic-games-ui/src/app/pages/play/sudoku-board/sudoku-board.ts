@@ -47,7 +47,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
   public isTimeCritical: boolean = false; // ¡Para el titileo!
   public isGameOver: boolean = false;
   private isSaving: boolean = false;
- 
+
 
 
   // --- VARIABLES DE ESTADO PARA EL POP-UP! ---
@@ -99,7 +99,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
     // Y la partida NO ha terminado (ni ganada ni perdida)...
     if (!this.isSaving && !this.isGameOver) {
       console.log("¡Abandonando partida! Marcando como FAILED.");
-      
+
       // ...llama a la API para "cancelar" la partida.
       // ¡Reutilizamos tu endpoint 'failGame'!
       this.apiService.failGame().subscribe({
@@ -382,26 +382,27 @@ export class SudokuBoard implements OnInit, OnDestroy {
     const cellKey = `${row}-${col}`;
     const control = this.boardForm.get(cellKey);
 
+    // 1. Definimos el tamaño de tu pop-up (basado en el CSS que haremos)
+    const popupWidth = 180; // 3 botones de 60px
+    const popupHeight = 240; // 4 filas de 60px
+    const margin = 10; // 10px de "aire" con el borde
+    // En móvil, desplaza el popup 60px hacia ARRIBA del dedo
+    const touchOffset = (window.innerWidth < 600) ? 60 : 0;
+    let top = event.clientY - (popupHeight / 2) - touchOffset;
+    // 2. Usamos una medida de pantalla más precisa
+    const screenWidth = document.documentElement.clientWidth;
+    const screenHeight = document.documentElement.clientHeight;
+
     if (control && control.enabled) {
       this.activeCellKey = cellKey;
-      
-      // --- ¡LÓGICA MEJORADA! ---
-      
-      // 1. Definimos el tamaño de tu pop-up (basado en el CSS que haremos)
-      const popupWidth = 180; // 3 botones de 60px
-      const popupHeight = 240; // 4 filas de 60px
-      const margin = 10; // 10px de "aire" con el borde
 
-      // 2. Usamos una medida de pantalla más precisa
-      const screenWidth = document.documentElement.clientWidth;
-      const screenHeight = document.documentElement.clientHeight;
 
       // 3. Centrado (igual que antes)
       let left = event.clientX - (popupWidth / 2);
       let top = event.clientY - (popupHeight / 2);
 
       // 4. Detección de bordes (más robusta)
-      
+
       // Borde derecho
       if (left + popupWidth > screenWidth - margin) {
         left = screenWidth - popupWidth - margin;
@@ -431,7 +432,7 @@ export class SudokuBoard implements OnInit, OnDestroy {
 
     const control = this.boardForm.get(this.activeCellKey);
 
-    if (control && control.enabled) { 
+    if (control && control.enabled) {
       control.setValue(value ? value.toString() : '');
       this.validateAllCells(); //
     }

@@ -34,3 +34,8 @@
     height: 45px;
   }
 }
+
+button:active {
+  transform: scale(0.95);
+  background-color: #e0e0e0; // Feedback visual instantáneo
+}

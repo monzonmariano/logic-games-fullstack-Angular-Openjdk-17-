@@ -49,3 +49,16 @@ app-root {
   flex-grow: 1; // ¡Ocupa todo el espacio restante!
   overflow-y: auto; // Permite scroll SÓLO si es necesario
 }
+
+// Solución mágica para iOS
+/* Previene el zoom en inputs en iOS para TODA la app */
+input, textarea, select {
+  font-size: 16px; // Tamaño seguro base
+}
+
+/* Media query para PC (opcional, si quieres letra pequeña en escritorio) */
+@media (min-width: 768px) {
+  input, textarea, select {
+    font-size: 14px; // O lo que prefieras
+  }
+}

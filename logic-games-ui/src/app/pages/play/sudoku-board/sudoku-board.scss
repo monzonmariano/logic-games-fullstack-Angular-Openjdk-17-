@@ -94,16 +94,39 @@ button {
   font-size: 1.2em;
 }
 
-// ¡NUEVO! Estilo para el mensaje
+// Estilo para el mensaje
 .game-message {
-  margin-top: 20px;
-  font-size: 1.3em;
-  font-weight: bold;
+  // CAMBIO: Posición fija para que no empuje el tablero
+  position: fixed; 
+  bottom: 20px; // Pegado abajo
+  left: 50%; // Centrado horizontal
+  transform: translateX(-50%); // Corrección de centrado
+  
+  z-index: 1000; // ¡Por encima de todo!
+  
+  // Estética mejorada (tipo Toast de Android)
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
   padding: 15px;
-  background-color: #e0ffe0; // Fondo verde pálido
-  border: 1px solid green;
-  color: green;
-  flex-shrink: 0; // No dejes que el mensaje se encoja
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  
+  font-size: 1.1em;
+  font-weight: bold;
+  
+  // Colores por defecto (Error/Info)
+  background-color: #333;
+  color: white;
+  
+  // Animación de entrada suave
+  animation: slideUp 0.3s ease-out;
+}
+
+// Animación para que suba desde abajo
+@keyframes slideUp {
+  from { transform: translate(-50%, 100%); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
 }
 
 // Estilo para el temporizador
@@ -199,5 +222,14 @@ button {
     }
     width: 95%;
   flex-shrink: 0; // No dejes que los botones se encojan
+  }
+}
+
+// Solución mágica para iOS
+input.cell {
+  font-size: 16px; // Mínimo seguro para evitar zoom
+  
+  @media (min-width: 768px) {
+    font-size: 1.8em; // En PC puedes hacerlo grande de nuevo
   }
 }

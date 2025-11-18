@@ -14,6 +14,8 @@ public class SudokuGeneratorService {
     private final PreGeneratedPuzzleRepository puzzleRepository;
     private final GameMetricRepository metricRepository;
 
+    private static final Random RANDOM = new Random();
+
     private static final int BOARD_SIZE = 9;
     private static final int SUB_GRID_SIZE = 3;
 
@@ -67,8 +69,8 @@ public class SudokuGeneratorService {
             return solve(board, row, col + 1);
         }
 
-        Random rand = new Random();
-        for (int num : rand.ints(1, BOARD_SIZE + 1).distinct().limit(BOARD_SIZE).toArray()) {
+
+        for (int num : RANDOM.ints(1, BOARD_SIZE + 1).distinct().limit(BOARD_SIZE).toArray()) {
             if (isValid(board, row, col, num)) {
                 board[row][col] = num;
                 if (solve(board, row, col + 1)) {
@@ -108,10 +110,10 @@ public class SudokuGeneratorService {
      * Tu método 'removeCells'
      */
     private static void removeCells(int[][] board, int numRemoves) {
-        Random rand = new Random();
+
         for (int i = 0; i < numRemoves; i++) {
-            int row = rand.nextInt(BOARD_SIZE);
-            int col = rand.nextInt(BOARD_SIZE);
+            int row = RANDOM.nextInt(BOARD_SIZE);
+            int col = RANDOM.nextInt(BOARD_SIZE);
             if (board[row][col] != 0) {
                 board[row][col] = 0;
             } else {

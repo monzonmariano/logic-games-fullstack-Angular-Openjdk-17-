@@ -11,12 +11,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -145,20 +147,32 @@ public class AuthService {
      * Generamos códigos y enviamos email.
      */
     public void requestPasswordReset(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+        // 1. Buscamos al usuario sin lanzar excepción automática
+        var userOptional = userRepository.findByEmail(email);
 
-        // Generamos AMBOS
+        // 2. "Silencio Estratégico": Si no existe, salimos del método.
+        // El controlador devolverá 200 OK, y el atacante no sabrá si el email existe o no.
+        if (userOptional.isEmpty()) {
+            // (Opcional) Puedes poner un log aquí para ti:
+            // System.out.println("Intento de reset con email no existente: " + email);
+            return;
+        }
+
+        // 3. Si llegamos aquí, el usuario existe. Lo recuperamos.
+        User user = userOptional.get();
+
+        // 4. Generamos AMBOS códigos (lógica original)
         String resetCode = otpUtil.generateOtp();
         String resetToken = UUID.randomUUID().toString();
 
-        // Guardamos en los campos de RESETEO (no en los de verificación)
+        // 5. Guardamos en BBDD
         user.setResetCode(resetCode);
         user.setResetCodeExpiry(LocalDateTime.now().plusMinutes(15));
         user.setResetToken(resetToken);
         user.setResetTokenExpiry(LocalDateTime.now().plusDays(1));
         userRepository.save(user);
 
+        // 6. Enviamos el email
         emailService.sendPasswordResetEmail(user.getEmail(), resetCode, resetToken);
     }
 

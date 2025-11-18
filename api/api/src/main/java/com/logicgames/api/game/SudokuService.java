@@ -14,10 +14,11 @@ import java.util.Optional;
 import java.util.List;
 import com.logicgames.api.game.dtos.ScoreboardEntryDTO;
 import java.util.stream.Collectors;
-
+import org.springframework.transaction.annotation.Transactional;
 
 @Service // Post-it: "Soy un Cerebro (Lógica de Negocio)"
 @RequiredArgsConstructor // Post-it: ¡Crea mi constructor para inyectar mis herramientas!
+@Transactional
 public class SudokuService {
 
 
@@ -72,7 +73,7 @@ public class SudokuService {
         String newSolution;
 
         // 1. Intenta sacar un puzzle del pool
-        Optional<PreGeneratedPuzzle> puzzleOpt = puzzleRepository.findTopByDifficulty(difficulty);
+        Optional<PreGeneratedPuzzle> puzzleOpt = puzzleRepository.findAnyAvailableByDifficulty(difficulty);
 
         if (puzzleOpt.isPresent()) {
             // ¡Genial! El pool tenía uno.
