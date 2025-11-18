@@ -1,5 +1,6 @@
 package com.logicgames.api.game;
 
+import com.logicgames.api.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ public class GameCleanupService {
     private final PreGeneratedPuzzleRepository puzzleRepository;
     private final GameMetricRepository metricRepository;
     private final SudokuGeneratorService generatorService;
+    private final UserRepository userRepository;
+
     /**
      * ¡TU JOB!
      * Se ejecuta automáticamente basado en la expresión "cron".
@@ -81,6 +84,20 @@ public class GameCleanupService {
         }
 
         System.out.println("-> JOB ELÁSTICO: Ejecución completada.");
+    }
+
+
+    /**
+     * Borra usuarios que nunca se verificaron después de 7 días.
+     */
+    @Scheduled(cron = "0 0 3 * * ?") // Se ejecuta a las 3 AM
+    public void cleanupUnverifiedUsers() {
+        LocalDateTime cutOffDate = LocalDateTime.now().minusDays(7);
+
+        // Necesitas un método en UserRepository
+        userRepository.deleteByIsVerifiedFalseAndCreatedAtBefore(cutOffDate);
+
+        System.out.println("-> JOB: Usuarios no verificados más antiguos de 7 días borrados.");
     }
 
     // --- EJECUCIÓN DIARIA (PARA PRODUCCIÓN) ---

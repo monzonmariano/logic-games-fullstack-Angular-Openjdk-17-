@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,28 +37,53 @@ public class AuthService {
      * 1. Registro inicial: Crea el usuario (no verificado), genera códigos y envía el email.
      */
     public void register(RegisterRequest request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalStateException("El email ya está en uso");
+
+        // 1. Intentamos encontrar un usuario existente
+        Optional<User> existingUserOpt = userRepository.findByEmail(request.getEmail());
+
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+
+            // Si el usuario YA ESTÁ VERIFICADO, es un intento de registro duplicado.
+            if (existingUser.isVerified()) {
+                throw new IllegalStateException("El email ya está en uso por una cuenta activa.");
+            }
+
+
+            // Generamos AMBOS: Código (para móvil) y Token (para enlace PC)
+            String verificationCode = otpUtil.generateOtp();
+            String verificationLinkToken = UUID.randomUUID().toString();
+
+            existingUser.setPassword(passwordEncoder.encode(request.getPassword())); // Actualiza la contraseña
+            existingUser.setVerificationCode(verificationCode);
+            existingUser.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(15));
+            existingUser.setVerificationToken(verificationLinkToken);
+            existingUser.setVerificationTokenExpiry(LocalDateTime.now().plusDays(1));
+
+            userRepository.save(existingUser);
+            emailService.sendVerificationEmail(request.getEmail(), verificationCode, verificationLinkToken);
+        }else{
+            // 2. Si el usuario NO existe, lo creamos (lógica original)
+            // ... (código original de creación de usuario nuevo) ...
+            // CÓDIGO DE CREACIÓN DE USUARIO NUEVO
+            String verificationCode = otpUtil.generateOtp();
+            String verificationLinkToken = UUID.randomUUID().toString();
+
+            var user = User.builder()
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .isVerified(false) // Nace bloqueado
+                    // Datos del código de 6 dígitos
+                    .verificationCode(verificationCode)
+                    .verificationCodeExpiry(LocalDateTime.now().plusMinutes(15))
+                    // Datos del enlace
+                    .verificationToken(verificationLinkToken)
+                    .verificationTokenExpiry(LocalDateTime.now().plusDays(1))
+                    .build();
+
+            userRepository.save(user);
+            emailService.sendVerificationEmail(request.getEmail(), verificationCode, verificationLinkToken);
         }
-
-        // Generamos AMBOS: Código (para móvil) y Token (para enlace PC)
-        String verificationCode = otpUtil.generateOtp();
-        String verificationLinkToken = UUID.randomUUID().toString();
-
-        var user = User.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .isVerified(false) // Nace bloqueado
-                // Datos del código de 6 dígitos
-                .verificationCode(verificationCode)
-                .verificationCodeExpiry(LocalDateTime.now().plusMinutes(15))
-                // Datos del enlace
-                .verificationToken(verificationLinkToken)
-                .verificationTokenExpiry(LocalDateTime.now().plusDays(1))
-                .build();
-
-        userRepository.save(user);
-        emailService.sendVerificationEmail(request.getEmail(), verificationCode, verificationLinkToken);
     }
 
     /**

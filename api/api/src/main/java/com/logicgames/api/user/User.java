@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -50,6 +51,10 @@ public class User implements UserDetails{
 
     private String resetToken; // Para el enlace de reseteo
     private LocalDateTime resetTokenExpiry;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt; // Para saber cuándo se creó el usuario
     // --- Métodos de UserDetails ---
     // UserDetails es el "carnet" que Spring Security sabe leer.
     // Le "traducimos" nuestro 'User' a lo que Spring Security entiende.
