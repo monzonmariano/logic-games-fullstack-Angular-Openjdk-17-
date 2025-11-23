@@ -1,10 +1,11 @@
 # ¡¡EL SECRETO MÁS IMPORTANTE!!
 .env
-
+target/
 # Archivos del IDE (IntelliJ)
 .idea/
 *.iml
-
+node_modules/
+dist/
 # Archivos de VS Code
 .vscode/
 
