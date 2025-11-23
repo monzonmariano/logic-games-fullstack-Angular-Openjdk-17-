@@ -2,15 +2,13 @@ package com.logicgames.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.authentication.AuthenticationProvider;
-import com.logicgames.api.jwt.JwtAuthenticationFilter;
+import com.logicgames.api.security.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -34,7 +32,8 @@ public class SecurityConfig {
                     config.setAllowedOrigins(List.of(
                             "https://logic-games.netlify.app", // Producción (Netlify)
                             "http://localhost:4200",         // Dev (Angular local)
-                            "http://localhost:8081"          // Dev (Docker local)
+                            "http://localhost:8081",          // Dev (Docker local)
+                            "https://pseudoanatomic-joie-ferally.ngrok-free.dev" // Pruebas locales desde el movil
                     ));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));

@@ -1,0 +1,61 @@
+<div class="lobby-container">
+  
+  @if (isLoading) {
+    <div class="loading-spinner">
+      <mat-spinner diameter="50"></mat-spinner>
+      <h3>Preparando Sopa de Letras...</h3>
+    </div>
+  } @else {
+    
+    <div class="lobby-header">
+      <a mat-icon-button routerLink="/">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <h2>Sopa de Letras</h2>
+    </div>
+
+    <div class="theme-section">
+      <mat-form-field appearance="outline" class="custom-select">
+        <mat-label>Elige una Temática</mat-label>
+        <mat-select [(value)]="selectedTheme">
+          @for (theme of themes; track theme.id) {
+            <mat-option [value]="theme.id">
+              <mat-icon style="margin-right: 8px;">{{ theme.icon }}</mat-icon>
+              {{ theme.label }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-card class="mode-section">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>timer</mat-icon>
+        <mat-card-title>Contrarreloj</mat-card-title>
+        <mat-card-subtitle>Gana antes de que se agote el tiempo</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="difficulty-row">
+          <button mat-stroked-button (click)="startGame('EASY', 'TIMED')">Fácil (10m)</button>
+          <button mat-stroked-button (click)="startGame('MEDIUM', 'TIMED')">Medio (6m)</button>
+          <button mat-stroked-button (click)="startGame('HARD', 'TIMED')">Difícil (3m)</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="mode-section">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>spa</mat-icon>
+        <mat-card-title>Modo Zen</mat-card-title>
+        <mat-card-subtitle>Juega relajado sin límites</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="difficulty-row">
+          <button mat-button (click)="startGame('EASY', 'FREE')">Fácil</button>
+          <button mat-button (click)="startGame('MEDIUM', 'FREE')">Medio</button>
+          <button mat-button (click)="startGame('HARD', 'FREE')">Difícil</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

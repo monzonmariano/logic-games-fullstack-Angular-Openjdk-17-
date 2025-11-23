@@ -1,0 +1,227 @@
+
+
+// --- CONTENEDOR PRINCIPAL ---
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  
+  height: 100dvh; 
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-y: auto; 
+  overflow-x: hidden;
+  
+  background-color: #f9f9f9;
+  position: relative;
+  gap: 10px;
+}
+
+// --- HEADER ---
+.header {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  
+  background: white;
+  padding: 8px 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+
+  .timer {
+    font-size: 1.3rem;
+    font-weight: bold;
+    font-family: monospace;
+    color: #333;
+    &.critical { color: #d32f2f; animation: blink 1s infinite; }
+  }
+  
+  button[mat-stroked-button] {
+    line-height: 32px;
+    min-width: auto;
+    padding: 0 12px;
+    border-radius: 20px;
+  }
+}
+
+// --- LISTA DE PALABRAS ---
+.word-list {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  max-height: 15vh; 
+  overflow-y: auto;
+  margin-bottom: 15px; 
+
+  .word-chip {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    color: #555;
+    cursor: default;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    
+    &.found {
+      background-color: #4caf50; // Verde en la lista está bien (es el standard)
+      color: white;
+      border-color: #4caf50;
+      text-decoration: line-through;
+      opacity: 0.8;
+    }
+  }
+}
+
+// --- WRAPPER DEL TABLERO ---
+.board-wrapper {
+  flex: 1; 
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 0;
+}
+
+// --- EL GRID ---
+.grid-container {
+  display: grid;
+  gap: 2px;
+  background-color: #ddd;
+  border: 2px solid #333;
+  touch-action: none;
+  user-select: none;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  
+  max-height: calc(100dvh - 200px); 
+  max-width: 600px;
+  
+  margin: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  border-radius: 4px;
+}
+
+// --- CELDAS 
+.cell {
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  // Texto Negro Intenso para contraste
+  color: #000; 
+  font-weight: 900; // Más gordita la letra
+  
+  font-size: clamp(0.8rem, 3.5vmin, 1.6rem);
+  cursor: pointer;
+  position: relative; 
+  z-index: 1;
+
+  // ESTADO 1: SELECCIÓN 
+  // Azul muy suave (0.2) para que la letra negra se lea perfecta
+  &.selected {
+    background-color: rgba(33, 150, 243, 0.25); 
+    border-radius: 50%;
+  }
+
+  // ESTADO 2: PALABRA ENCONTRADA (ROJO PROFESOR)
+  &.found {
+    background-color: #fff !important; // Fondo blanco limpio
+    color: #222 !important; 
+    
+    // La línea roja
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      z-index: -1; // Detrás del texto
+      
+      width: 90%; 
+      height: 3px; 
+      border-radius: 2px;
+      
+      // ROJO PROFESOR (Con transparencia para ver cruces)
+      background-color: rgba(211, 47, 47, 0.6); 
+      
+      transform: translate(-50%, -50%) rotate(-45deg);
+      // Usamos explícitamente drawLine
+      animation: drawLine 0.2s ease-out forwards;
+    }
+  }
+  
+  &.found.selected {
+    background-color: rgba(33, 150, 243, 0.1) !important; 
+  }
+}
+
+// --- ANIMACIONES ---
+@keyframes blink { 50% { opacity: 0.5; } }
+
+// Animación unificada del tachado
+@keyframes drawLine { 
+  from { width: 0; opacity: 0; } 
+  to { width: 80%; opacity: 1; } 
+}
+
+// Animaciones del Toast
+@keyframes slideUpFade {
+  0% { opacity: 0; transform: translate(-50%, 100%) scale(0.8); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes softPulse {
+  0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); transform: translate(-50%, -50%) scale(1); }
+  50% { box-shadow: 0 0 20px 10px rgba(76, 175, 80, 0); transform: translate(-50%, -50%) scale(1.02); }
+  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); transform: translate(-50%, -50%) scale(1); }
+}
+
+// --- TOAST ---
+.victory-toast {
+  position: absolute; 
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 100;
+  
+  background: rgba(40, 44, 52, 0.95); 
+  backdrop-filter: blur(5px);
+  color: white;
+  padding: 30px 50px;
+  border-radius: 20px;
+  border: 2px solid #4caf50;
+  
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  
+  display: flex; flex-direction: column; gap: 20px; align-items: center;
+  
+  // Animación compuesta
+  animation: slideUpFade 0.5s ease-out forwards, softPulse 2s infinite 0.5s;
+  
+  h3 { margin: 0; color: #4caf50; text-transform: uppercase; letter-spacing: 1px;}
+  button { min-width: 140px; font-size: 1.1rem; padding: 10px;}
+}
+
+// --- MEDIA QUERY LANDSCAPE ---
+@media (orientation: landscape) and (max-height: 500px) {
+  
+  app-root { display: none !important; }
+  body::after {
+    content: "📱 Gira tu dispositivo para jugar.";
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #222; color: #fff; display: flex; justify-content: center; align-items: center;
+    z-index: 9999; font-size: 1.5rem;
+  }
+}

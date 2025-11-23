@@ -1,0 +1,95 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.lobby-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto; 
+  background-color: #f0f2f5;
+  gap: 20px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.lobby-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  flex-shrink: 0;
+  h2 { margin: 0 0 0 15px; font-size: 1.8rem; color: #333; }
+}
+
+.mode-section {
+  width: 100%;
+  max-width: 600px;
+  flex-shrink: 0;
+}
+
+.difficulty-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; 
+  gap: 10px;
+  margin-top: 15px;
+  button { flex-grow: 1; }
+}
+
+// --- FIX PARA MÓVIL HORIZONTAL (LANDSCAPE) ---
+@media (orientation: landscape) and (max-height: 500px) {
+  
+  .lobby-container {
+    flex-direction: row; 
+    align-items: flex-start; 
+    padding: 10px 20px;
+    
+    // PROPIEDADES CORREGIDAS:
+    flex-wrap: wrap; 
+    align-content: flex-start;
+    overflow-y: auto; 
+  }
+
+  // Panel Izquierdo
+  .lobby-header {
+    width: 30%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: sticky; // Se queda fijo al hacer scroll
+    top: 0;
+    z-index: 10;
+    
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    
+    h2 { margin: 10px 0 0 0; text-align: center; font-size: 1.2rem; }
+  }
+
+  // Panel Derecho
+  .mode-section {
+    width: 65%;
+    margin-left: auto;
+    margin-bottom: 10px;
+    
+    mat-card-header { padding: 10px; }
+    mat-card-content { padding: 0 10px 10px 10px; }
+    mat-card-subtitle { display: none; } 
+  }
+}

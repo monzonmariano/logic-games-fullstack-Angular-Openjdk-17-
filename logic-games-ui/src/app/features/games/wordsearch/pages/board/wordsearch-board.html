@@ -1,0 +1,56 @@
+<div class="game-container" *ngIf="game">
+  
+ <div class="header">
+    <button mat-icon-button (click)="goBack()" aria-label="Volver">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    
+    <div class="timer" [class.critical]="isTimeCritical">
+      {{ timeDisplay }}
+    </div>
+
+    <button mat-stroked-button (click)="saveAndQuit()">
+      Pausa
+    </button>
+  </div>
+
+  <div class="word-list">
+    @for (word of game.wordsToFind; track word) {
+      <span class="word-chip" [class.found]="game.foundWords.includes(word)">
+        {{ word }}
+      </span>
+    }
+  </div>
+
+  <div class="board-wrapper">
+    <div class="grid-container" 
+         #gridContainer
+         [style.grid-template-columns]="'repeat(' + game.gridSize + ', 1fr)'"
+         (mouseleave)="onMouseUp()"
+         (touchstart)="onTouchStart($event)" 
+         (touchmove)="onTouchMove($event)" 
+         (touchend)="onTouchEnd()">
+
+      @for (row of grid; track $index) {
+        @for (cell of row; track $index) {
+          <div class="cell"
+               [attr.data-row]="cell.row"
+               [attr.data-col]="cell.col"
+               [class.selected]="isCellSelected(cell.row, cell.col)"
+               [class.found]="cell.found"
+               (mousedown)="onMouseDown(cell.row, cell.col)"
+               (mouseenter)="onMouseEnter(cell.row, cell.col)">
+            {{ cell.char }}
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  @if (gameMessage) {
+    <div class="victory-toast">
+      {{ gameMessage }}
+      <button mat-raised-button color="accent" (click)="saveAndQuit()">Volver al Menú</button>
+    </div>
+  }
+</div>

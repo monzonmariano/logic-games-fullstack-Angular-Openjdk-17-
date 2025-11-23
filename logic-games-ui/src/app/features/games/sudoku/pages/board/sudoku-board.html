@@ -1,0 +1,46 @@
+<div class="sudoku-container">
+    
+    <div class="game-controls">
+        <button mat-icon-button (click)="goBackToHome()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        
+        <div class="timer-display" [class.blinking]="isTimeCritical">
+            {{ timeDisplay }}
+        </div>
+
+        <button mat-stroked-button color="primary" (click)="saveAndQuit()" [disabled]="isGameOver">
+            Pausa
+        </button>
+    </div>
+
+    <div class="board-wrapper">
+        <form [formGroup]="boardForm" class="sudoku-grid">
+            @for (row of boardView; let i = $index; track i) {
+                @for (cell of row; let j = $index; track j) {
+                    <input class="cell" 
+                           [class.original]="cell.isOriginal" 
+                           [class.invalid]="invalidCells.has(i + '-' + j)"
+                           type="tel" 
+                           [formControlName]="i + '-' + j" 
+                           (click)="onCellClick($event, i, j)" 
+                           readonly>
+                }
+            }
+        </form>
+    </div>
+
+    <div class="footer-actions">
+        <button mat-raised-button color="accent" class="check-btn" (click)="checkSolution()" [disabled]="isGameOver">
+            Comprobar Solución
+        </button>
+    </div>
+
+    @if (gameMessage) { <div class="game-message">{{ gameMessage }}</div> }
+    @if (isNumpadOpen) {
+        <div class="numpad-popup-wrapper" [style.left.px]="numpadPosition.x" [style.top.px]="numpadPosition.y">
+            <app-numpad (numpadClick)="onNumpadInput($event)"></app-numpad>
+        </div>
+        <div class="numpad-backdrop" (click)="isNumpadOpen = false"></div>
+    }
+</div>

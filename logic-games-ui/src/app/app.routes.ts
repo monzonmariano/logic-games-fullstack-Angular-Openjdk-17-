@@ -1,18 +1,19 @@
 import { Routes } from '@angular/router';
 
 // 1. Importa los dos componentes nuevos
-import { Login } from './pages/login/login';
-import { Register } from './pages/register/register';
-import { Home } from './pages/home/home';
-import { authGuard } from './guards/auth-guard';
-import { ForgotPassword } from './pages/forgot-password/forgot-password';
-import { ResetPassword } from './pages/reset-password/reset-password';
-import { SudokuBoard } from './pages/play/sudoku-board/sudoku-board';
-import { Scoreboard } from './pages/scoreboard/scoreboard';
-import { SudokuLobby } from './sudoku-lobby/sudoku-lobby';
-import { VerifyEmail } from './pages/verify-email/verify-email';
-import { VerifyLink } from './pages/verify-link/verify-link';
-import { EnterResetCode } from './pages/enter-reset-code/enter-reset-code';
+import { Login } from './features/auth/login/login';
+import { Register } from './features/auth/register/register';
+import { Home } from './features/home/home';
+import { authGuard } from './core/guards/auth-guard';
+import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
+import { ResetPassword } from './features/auth/reset-password/reset-password';
+import { SudokuBoard } from './features/games/sudoku/pages/board/sudoku-board';
+import { Scoreboard } from './features/scoreboard/scoreboard';
+import { SudokuLobby } from './features/games/sudoku/pages/lobby/sudoku-lobby';
+import { VerifyEmail } from './features/auth/verify-email/verify-email';
+import { VerifyLink } from './features/auth/verify-link/verify-link';
+import { EnterResetCode } from './features/auth/enter-reset-code/enter-reset-code';
+import { WordSearchLobby } from './features/games/wordsearch/pages/lobby/wordsearch-lobby';
 
 export const routes: Routes = [
 
@@ -68,7 +69,20 @@ export const routes: Routes = [
         component: VerifyLink
     },
     { path: 'enter-reset-code', component: EnterResetCode }
-    ,
+    ,// RUTA DE LOBBY SOPA DE LETRAS
+    {
+        path: 'wordsearch-lobby',
+        component: WordSearchLobby,
+        canActivate: [authGuard]
+    },
+    
+    // RUTA DE JUEGO (TABLERO) - ¡PENDIENTE DE CREAR!
+    {
+        path: 'play/wordsearch',
+        loadComponent: () => import('./features/games/wordsearch/pages/board/wordsearch-board')
+            .then(m => m.WordSearchBoard),
+        canActivate: [authGuard]
+    }
 
 
 ];

@@ -1,0 +1,146 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.lobby-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // Altura total y scroll si es necesario
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto; 
+  background-color: #f0f2f5;
+  gap: 20px;
+}
+
+// --- SPINNER ---
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+// --- HEADER (Título) ---
+.lobby-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  flex-shrink: 0;
+  
+  h2 { margin: 0 0 0 15px; font-size: 1.8rem; color: #333; }
+}
+
+// --- SECCIÓN DE TEMAS (Chips) ---
+.theme-section {
+  width: 100%;
+  max-width: 600px;
+  flex-shrink: 0;
+  margin-bottom: 10px;
+
+  .custom-select {
+    width: 100%;
+    font-size: 0.9rem;
+    
+    // Color de fondo blanco limpio
+    background-color: white; 
+    border-radius: 8px;
+    
+    // Sombra suave para que flote
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+
+    // Quitar el sub-borde raro de Material
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none; // Oculta el espacio reservado para errores/hints abajo
+    }
+    
+    // Ajustar altura para que no sea tan cabezón
+    ::ng-deep .mat-mdc-form-field-flex {
+      padding-top: 0 !important;
+      align-items: center;
+    }
+  }
+}
+
+
+
+// --- TARJETAS DE MODO ---
+.mode-section {
+  width: 100%;
+  max-width: 600px;
+  flex-shrink: 0;
+}
+
+.difficulty-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; 
+  gap: 10px;
+  margin-top: 15px;
+  
+  button { flex-grow: 1; }
+}
+
+// --- FIX PARA MÓVIL HORIZONTAL (LANDSCAPE) ---
+// Se activa solo si la altura es poca (móvil girado)
+@media (orientation: landscape) and (max-height: 500px) {
+  
+  .lobby-container {
+    flex-direction: row; // Lado a lado
+    align-items: flex-start;
+    padding: 10px 20px;
+    
+    // En horizontal permitimos que el contenido fluya
+    flex-wrap: wrap; 
+    align-content: flex-start;
+    overflow-y: auto; 
+  }
+
+  // Panel Izquierdo (Título fijo)
+  .lobby-header {
+    width: 30%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    // Sticky para que no se vaya al scrollear los temas
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    
+    h2 { margin: 10px 0 0 0; text-align: center; font-size: 1.2rem; }
+  }
+
+  // Panel Derecho (Contenido scrollable)
+  // Aplicamos esto a TODAS las secciones de contenido
+  .mode-section, .theme-section {
+    width: 65%; 
+    margin-left: auto; // Empujar a la derecha
+    margin-bottom: 15px;
+  }
+  
+  // Ajuste específico para las tarjetas en horizontal
+  .mode-section {
+    mat-card-header { padding: 10px; }
+    mat-card-content { padding: 0 10px 10px 10px; }
+    mat-card-subtitle { display: none; } 
+  }
+  
+  // Ajuste para los chips en horizontal (alineados a la izquierda)
+  .theme-chips-container {
+    justify-content: flex-start;
+  }
+}

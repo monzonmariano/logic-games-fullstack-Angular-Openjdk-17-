@@ -1,0 +1,175 @@
+// --- CONTENEDOR PRINCIPAL ---
+.sudoku-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; // Empezamos arriba
+  
+  height: 100dvh; 
+  width: 100%;
+  
+  padding: 10px;
+  box-sizing: border-box;
+  
+  // CAMBIO CRÍTICO 1: ¡PERMITIR SCROLL!
+  // Si la pantalla es muy bajita, el usuario podrá bajar a buscar el botón.
+  overflow-y: auto; 
+  overflow-x: hidden;
+  
+  background-color: #f5f5f5;
+  gap: 15px; // Espacio consistente entre bloques
+}
+
+// --- HEADER ---
+.game-controls {
+  flex: 0 0 auto; // Altura natural
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  
+  background: white;
+  padding: 10px 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  
+  // Sin márgenes extra, usamos el gap del padre
+  margin: 0;
+
+  .timer-display {
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: #333;
+  }
+}
+
+// --- WRAPPER DEL TABLERO ---
+.board-wrapper {
+  // No forzamos flex-grow agresivo para evitar estiramientos raros
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 1; // Permite encoger si hace falta
+  padding: 0 10px; // 10px de "colchón" a los lados
+}
+
+// --- EL TABLERO ---
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  // 3. Altura: Automática (se calcula sola por el aspect-ratio)
+  height: auto;
+  // 4. LÍMITES (La jaula):
+  // Nunca seas más alto que el 65% de la pantalla (para dejar sitio al footer)
+  max-height: 65vh;
+  // Límite PC
+  max-width: 500px; 
+  
+  border: none;
+  // Usamos una sombra exterior dura para simular el borde del contenedor
+  box-shadow: 0 0 0 3px #333, 0 10px 20px rgba(0,0,0,0.15);
+  
+  background-color: white;
+  margin: auto; 
+  align-self: center; // Importante para flexbox
+  // CAMBIO: Sombra más pronunciada para efecto "tablero flotante"
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.cell {
+  width: 100%; height: 100%;
+
+  background-color: transparent;
+  text-align: center; padding: 0;
+  color: #1976d2; font-weight: 500; font-family: 'Roboto', sans-serif;
+  
+  // Fuente dinámica basada en viewport (vmin)
+  font-size: clamp(0.8rem, 3.5vmin, 1.6rem);
+
+  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  appearance: textfield; -moz-appearance: textfield;
+  
+ 
+// --- GESTIÓN DE BORDES (SOMBRAS) ---
+  
+  // 1. Borde Base (Fino y Gris) para TODAS las celdas
+  // Usamos !important para asegurar que no se pierda al interactuar
+  box-shadow: inset 0 0 0 1px #ccc; 
+  border: none; 
+
+  // 2. Líneas Gruesas VERTICALES (Derecha de col 3 y 6)
+  // Excluimos la col 9 (:nth-child(9n)) porque ese es el borde derecho del contenedor
+  &:nth-child(3n):not(:nth-child(9n)) { 
+    box-shadow: inset -2px 0 0 0 #333, inset 0 0 0 1px #ccc; 
+  }
+
+  // 3. Líneas Gruesas HORIZONTALES (Abajo de fila 3 y 6)
+  // Indices 19-27 (Fila 3) y 46-54 (Fila 6)
+  &:nth-child(n+19):nth-child(-n+27),
+  &:nth-child(n+46):nth-child(-n+54) { 
+    box-shadow: inset 0 -2px 0 0 #333, inset 0 0 0 1px #ccc; 
+  }
+
+  // 4. CRUCES (Intersecciones Derecha + Abajo)
+  // Celdas 21, 24 (Fila 3, Cols 3,6) y 48, 51 (Fila 6, Cols 3,6)
+  &:nth-child(3n):not(:nth-child(9n)):nth-child(n+19):nth-child(-n+27),
+  &:nth-child(3n):not(:nth-child(9n)):nth-child(n+46):nth-child(-n+54) {
+      box-shadow: inset -2px -2px 0 0 #333, inset 0 0 0 1px #ccc;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-actions .check-btn {
+    width: 100%; // En móvil sí queremos que sea ancho para dedos gordos
+    border-radius: 12px; // Menos redondo en móvil
+  }
+}
+@media (max-width: 768px) { input.cell { font-size: 16px; } }
+.original { background-color: #e0e0e0; color: #000; font-weight: 700; }
+.cell.invalid { color: #d32f2f; background-color: #ffcdd2; }
+
+// --- FOOTER (Botón) ---
+.footer-actions {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 15px; // Más aire abajo
+
+  .check-btn {
+    // CAMBIO: Ya no es width 100%
+    width: auto; 
+    min-width: 250px; // Ancho mínimo elegante
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 30px; // ¡Botón Píldora! (Redondo)
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); // Sombra flotante
+    transition: transform 0.1s;
+    
+    &:active {
+      transform: scale(0.98); // Efecto click
+    }
+  }
+}
+
+// --- EXTRAS ---
+.game-message {
+  position: fixed; // Fixed siempre visible
+  bottom: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 2000; width: 90%; max-width: 400px; text-align: center;
+  padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  font-size: 1.1rem; font-weight: bold; background-color: #323232; color: white;
+  animation: slideUp 0.3s ease-out;
+}
+.blinking { color: #d32f2f; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+@keyframes slideUp { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+.numpad-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.2); z-index: 99; }
+.numpad-popup-wrapper { position: fixed; z-index: 100; background: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); overflow: hidden; }
+

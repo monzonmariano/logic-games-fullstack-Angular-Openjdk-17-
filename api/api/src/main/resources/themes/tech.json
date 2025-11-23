@@ -1,0 +1,9 @@
+{
+  "id": "TECH",
+  "label": "💻 Tecnología",
+  "words": [
+    "JAVA", "SPRING", "DOCKER", "ANGULAR", "LINUX", "CLOUD", "API",
+    "GIT", "MAVEN", "LOMBOK", "DEPLOY", "MICROSERVICE", "OAUTH", "JWT",
+    "PYTHON", "REACT", "SQL", "MONGO", "KUBERNETES", "REDIS", "JENKINS"
+  ]
+}

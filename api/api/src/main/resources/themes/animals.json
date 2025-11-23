@@ -1,0 +1,9 @@
+{
+  "id": "ANIMALS",
+  "label": "🦁 Animales",
+  "words": [
+    "LEON", "TIGRE", "CEBRA", "ELEFANTE", "JIRAFA", "MONO", "PANDA",
+    "KOALA", "AGUILA", "TIBURON", "BALLENA", "DELFIN", "LOBO", "OSO",
+    "ZORRO", "CANGURO", "PINGUINO", "SERPIENTE", "CABALLO", "GATO"
+  ]
+}

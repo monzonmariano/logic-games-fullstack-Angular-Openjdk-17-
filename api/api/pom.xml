@@ -2,17 +2,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
+<!--    Qué hace: Le dice a Maven (la herramienta de construcción) qué versión de las reglas de Maven debe seguir.-->
+<!--    modelVersion: Siempre es 4.0.0. Es el estándar actual. Si esto cambia, Maven sabría que debe leer el archivo de forma diferente.-->
+<!--    xmlns / xsi: Son direcciones de internet que usan los IDEs (como IntelliJ) para saber qué tags son válidos y darte autocompletado.-->
+
+    <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+<!--    Significado: Esto es Herencia pura. Tu proyecto es "hijo" de Spring Boot.-->
+<!--    ¿Qué configura?: Al tener este "padre", tu proyecto hereda automáticamente cientos de configuraciones por defecto:-->
+<!--    Versiones compatibles de librerías (para que no tengas que elegir versión de Jackson, Hibernate, etc. una por una).-->
+<!--    Configuración del compilador de Java.-->
+<!--    Configuración de codificación (UTF-8).-->
+
 	<groupId>com.logicgames</groupId>
 	<artifactId>api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>api</name>
 	<description>Demo project for Spring Boot</description>
+<!--    groupId: Es como el nombre de tu "Empresa" o dominio invertido. Sirve para agrupar todos tus proyectos.-->
+<!--    artifactId: Es el nombre específico de este proyecto (api). Será el nombre del archivo .jar final (api.jar).-->
+<!--    version:-->
+<!--    SNAPSHOT: Significa "En desarrollo/Inestable". Maven sabe que esta versión cambia constantemente.-->
+<!--    Cuando pases a producción real, cambiarás esto a 1.0.0 (sin SNAPSHOT).-->
 	<url/>
 	<licenses>
 		<license/>
@@ -29,17 +44,23 @@
 	<properties>
 		<java.version>17</java.version>
 	</properties>
+<!--    Qué hace: Son Variables Globales dentro del XML.-->
+<!--    Con quién se comunica: Se comunica con el Compilador de Java. Le dice: "Oye, aunque tengas Java 21 instalado en tu máquina, asegúrate de compilar esto respetando las reglas de Java 17".-->
+<!--    Utilidad: Si quieres cambiar la versión de Java o de una librería en todo el proyecto, solo cambias el número aquí.-->
 	<dependencies>
+<!--        Para el Núcleo Web (spring-boot-starter-web)-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+<!--            Para Lombok (lombok)-->
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
         <dependency>
+<!--            Para el Driver de Base de Datos (postgresql)-->
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
@@ -50,10 +71,12 @@
 			<scope>test</scope>
 		</dependency>
         <dependency>
+<!--            Para Seguridad (spring-boot-starter-security)-->
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
+<!--            Para los Tokens JWT (jjwt-api, jjwt-impl, jjwt-jackson)-->
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.11.5</version>
@@ -71,27 +94,34 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+<!--            Para JPA/Hibernate (spring-boot-starter-data-jpa)-->
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
+<!--            Para Email (sendgrid-java)-->
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
             <version>4.10.3</version>
         </dependency>
         <dependency>
+<!--            Para Rate Limiting (bucket4j-core)-->
             <groupId>com.bucket4j</groupId>
             <artifactId>bucket4j-core</artifactId>
             <version>8.1.0</version>
         </dependency>
         <dependency>
+<!--            Para Validación de Datos (spring-boot-starter-validation)-->
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.opensudoku.sudoku/sudoku-solver -->
+
 	</dependencies>
 
 	<build>
+<!--        Esta es la parte más mecánica. Define cómo se fabrica el software.-->
+<!--        Qué hace: Es el "copiador". Mueve archivos como application.properties, imágenes o HTMLs desde tu carpeta src a la carpeta final target.-->
+<!--        Esa configuración específica: Le dice a Maven que NO intente "leer o modificar" los archivos .properties, solo copiarlos tal cual.-->
 		<plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -103,6 +133,12 @@
             </configuration>
             </plugin>
 			<plugin>
+<!--                Con quién se comunica: Con javac (el compilador de Java) y con Lombok.-->
+<!--                Por qué es vital: Lombok no es código real, son anotaciones (@Data). -->
+<!--                Este plugin le dice al compilador: "Antes de terminar de compilar,-->
+<!--                llama a Lombok para que escriba los Getters y Setters por mí" (annotationProcessor).-->
+<!--                Sin esto, tu código fallaría al compilar diciendo "Método getEmail() no encontrado".-->
+
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -115,6 +151,11 @@
 				</configuration>
 			</plugin>
 			<plugin>
+<!--                Qué hace: Toma todo tu código compilado (.class) + todas las dependencias descargadas (.jar) y -->
+<!--                las mete en una licuadora para crear UN SOLO archivo ejecutable (api-0.0.1-SNAPSHOT.jar).-->
+<!--                El exclude: Le dice: "Usa Lombok para compilar, pero NO lo metas en el archivo final". -->
+<!--                ¿Por qué? Porque Lombok solo sirve para generar código; en tiempo de ejecución (Runtime) ya no hace falta, así que ahorramos espacio.-->
+
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
