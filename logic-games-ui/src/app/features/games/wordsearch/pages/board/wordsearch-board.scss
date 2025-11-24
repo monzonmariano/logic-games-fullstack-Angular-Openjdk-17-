@@ -51,34 +51,74 @@
 }
 
 // --- LISTA DE PALABRAS ---
-.word-list {
-  flex: 0 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
+// --- BARRA SELECTORA (Compacta) ---
+.word-selector-bar {
+  flex: 0 0 auto; // Altura fija pequeña
   width: 100%;
   max-width: 600px;
-  max-height: 15vh; 
-  overflow-y: auto;
-  margin-bottom: 15px; 
-
-  .word-chip {
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.9rem;
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  background: white;
+  padding: 10px 20px;
+  border-radius: 30px; // Forma de píldora
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+  
+  .selector-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
     color: #555;
-    cursor: default;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  
+  &:active { background-color: #f5f5f5; }
+}
+
+// --- LISTA FLOTANTE (Dropdown) ---
+.floating-word-list {
+  position: absolute; // ¡Flota sobre el juego!
+  top: 130px; // Ajustar según la altura de tu header + selector
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px); // Efecto cristal
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  z-index: 50; // Por encima del tablero
+  
+  // Layout de chips
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-height: 60vh; // Si son muchas, scroll interno
+  overflow-y: auto;
+  border: 1px solid #ddd;
+
+  // Estilo de los chips (El mismo de antes)
+  .word-chip {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #333;
     
     &.found {
-      background-color: #4caf50; // Verde en la lista está bien (es el standard)
-      color: white;
-      border-color: #4caf50;
+      background-color: transparent;
+      color: #aaa; // Gris claro
       text-decoration: line-through;
-      opacity: 0.8;
+      border-color: transparent;
     }
   }
 }
@@ -92,6 +132,10 @@
   justify-content: center;
   align-items: center;
   padding: 5px 0;
+  // Importante: position relative para que el z-index funcione bien
+  position: relative; 
+  z-index: 1;
+  overflow: hidden;
 }
 
 // --- EL GRID ---
@@ -105,7 +149,11 @@
   aspect-ratio: 1 / 1;
   width: 100%;
   
-  max-height: calc(100dvh - 200px); 
+ // ACTUALIZACIÓN: Como quitamos la lista fija, tenemos más espacio.
+  // Restamos solo Header + Selector + Paddings (~140px)
+  max-height: calc(100dvh - 140px);
+  
+  // Límite de anchura para PC (para que no sea gigante)
   max-width: 600px;
   
   margin: auto;

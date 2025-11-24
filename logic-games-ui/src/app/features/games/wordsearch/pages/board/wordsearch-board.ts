@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { WordSearchService, WordSearchGame } from '../../services/wordsearch.service';
 import { Subscription, interval } from 'rxjs';
-
+import { ElementRef } from '@angular/core';
 
 interface Cell {
     char: string;
@@ -41,10 +41,13 @@ export class WordSearchBoard implements OnInit, OnDestroy {
     public isTimeCritical: boolean = false;
     public isGameOver: boolean = false;
     public gameMessage: string = ""; // Para el mensaje de "Ganaste"
+    
+    public showWordList: boolean = false;
 
     constructor(
         private wsService: WordSearchService,
-        private router: Router
+        private router: Router,
+        private eRef: ElementRef
     ) { }
 
     ngOnInit() {
@@ -85,9 +88,63 @@ export class WordSearchBoard implements OnInit, OnDestroy {
             }
             this.grid.push(row);
         }
+
+        this.restoreGameState();
         this.isLoading = false;
         this.setupTimer();
     }
+
+    // --- FIX: RESTAURAR PARTIDA ---
+  private restoreGameState() {
+    if (!this.game || !this.game.foundWords) return;
+
+    // Recorremos todas las palabras que el usuario ya encontró en el pasado
+    this.game.foundWords.forEach(word => {
+      // Buscamos dónde está esa palabra en el grid y la marcamos
+      this.findAndMarkWordOnGrid(word);
+    });
+  }
+
+  private findAndMarkWordOnGrid(word: string) {
+    // Búsqueda de fuerza bruta simple (el grid es pequeño, es instantáneo)
+    const size = this.game!.gridSize;
+    // Direcciones: [fila, col] (Horizontal, Vertical, Diagonal, Inversas...)
+    const directions = [
+        [0, 1], [1, 0], [1, 1], [1, -1], // H, V, D-Der, D-Izq
+        [0, -1], [-1, 0], [-1, -1], [-1, 1] // Inversas
+    ];
+
+    for(let r=0; r<size; r++) {
+        for(let c=0; c<size; c++) {
+            // Si la primera letra coincide, miramos alrededor
+            if (this.grid[r][c].char === word[0]) {
+                for (let [dr, dc] of directions) {
+                    if (this.checkMatch(r, c, dr, dc, word)) {
+                        this.markDirection(r, c, dr, dc, word.length);
+                        return; // Palabra encontrada y marcada, pasamos a la siguiente
+                    }
+                }
+            }
+        }
+    }
+  }
+
+  private checkMatch(r: number, c: number, dr: number, dc: number, word: string): boolean {
+    const size = this.game!.gridSize;
+    for(let i=0; i<word.length; i++) {
+        const nr = r + i*dr;
+        const nc = c + i*dc;
+        if (nr < 0 || nr >= size || nc < 0 || nc >= size) return false;
+        if (this.grid[nr][nc].char !== word[i]) return false;
+    }
+    return true;
+  }
+
+  private markDirection(r: number, c: number, dr: number, dc: number, len: number) {
+      for(let i=0; i<len; i++) {
+          this.grid[r + i*dr][c + i*dc].found = true;
+      }
+  }
 
     private setupTimer() {
         if (!this.game) return;
@@ -141,7 +198,29 @@ export class WordSearchBoard implements OnInit, OnDestroy {
             this.updateSelection(r, c);
         }
     }
+     
+    // --- LÓGICA DE CLICK OUTSIDE ---
+  @HostListener('document:click', ['$event'])
+  @HostListener('document:touchstart', ['$event'])
+  clickout(event: Event) {
+    // Si la lista no está abierta, no hacemos nada
+    if (!this.showWordList) return;
 
+    const target = event.target as HTMLElement;
+    
+    // 1. Si toca el BOTÓN que abre/cierra, ignoramos (lo maneja su propio click)
+    if (target.closest('.word-selector-bar')) {
+        return; 
+    }
+
+    // 2. Si toca DENTRO de la lista flotante, ignoramos (para poder scrollear la lista)
+    if (target.closest('.floating-word-list')) {
+        return; 
+    }
+
+    // 3. Si toca FUERA (Tablero, Fondo, Header...), cerramos.
+    this.showWordList = false;
+  }
     // Escucha global por si sueltan el clic fuera del tablero
     @HostListener('window:mouseup')
     onMouseUp() {
@@ -259,6 +338,8 @@ export class WordSearchBoard implements OnInit, OnDestroy {
                 cells.push(cell);
             }
         }));
+
+        // Ordenamos por posición visual
         cells.sort((a, b) => (a.row - b.row) || (a.col - b.col));
         const wordForward = cells.map(c => c.char).join("");
         const wordReverse = wordForward.split('').reverse().join('');
@@ -360,5 +441,9 @@ export class WordSearchBoard implements OnInit, OnDestroy {
             }
         });
     }
-}
+} 
+// Método para abrir/cerrar
+  toggleWordList() {
+    this.showWordList = !this.showWordList;
+  }
 }

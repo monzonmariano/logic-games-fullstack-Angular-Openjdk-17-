@@ -14,13 +14,23 @@
     </button>
   </div>
 
-  <div class="word-list">
-    @for (word of game.wordsToFind; track word) {
-      <span class="word-chip" [class.found]="game.foundWords.includes(word)">
-        {{ word }}
-      </span>
-    }
+  <div class="word-selector-bar" (click)="toggleWordList()">
+    <div class="selector-info">
+      <mat-icon>list</mat-icon>
+      <span>Palabras encontradas: {{game.foundWords.length}} / {{game.wordsToFind.length}}</span>
+    </div>
+    <mat-icon>{{ showWordList ? 'expand_less' : 'expand_more' }}</mat-icon>
   </div>
+
+  @if (showWordList) {
+    <div class="floating-word-list">
+      @for (word of game.wordsToFind; track word) {
+        <span class="word-chip" [class.found]="game.foundWords.includes(word)">
+          {{ word }}
+        </span>
+      }
+    </div>
+  }
 
   <div class="board-wrapper">
     <div class="grid-container" 
