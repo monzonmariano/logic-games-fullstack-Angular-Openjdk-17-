@@ -1,7 +1,7 @@
 package com.logicgames.api.game.sudoku.controller;
 
 import com.logicgames.api.game.sudoku.model.SudokuGame;
-import com.logicgames.api.game.sudoku.dto.ScoreboardEntryDTO;
+import com.logicgames.api.game.common.dto.ScoreboardEntryDTO;
 import com.logicgames.api.game.sudoku.service.SudokuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

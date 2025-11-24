@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Api } from '../../core/services/api';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, interval } from 'rxjs';
 
 
 // ¡Importa los módulos de Material para la UI!
@@ -29,7 +29,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class Home implements OnInit {
+export class Home implements OnInit , OnDestroy{
 
   public secureMessage = 'Cargando datos secretos...';
 
@@ -59,6 +59,11 @@ public games = [
 
   public userEmail$: Observable<string | null>;
 
+  // --- VARIABLES PARA SWIPE Y AUTOPLAY ---
+  private touchStartX = 0;
+  private touchEndX = 0;
+  private autoPlaySubscription: Subscription | null = null;
+
   constructor(
     private apiService: Api,
     private router: Router,
@@ -77,8 +82,12 @@ public games = [
         this.secureMessage = "¡Error! No pudimos cargar los datos.";
       }
     });
+    // INICIAR AUTO-PLAY AL ENTRAR
+    this.startAutoPlay();
   }
-
+  ngOnDestroy(): void {
+    this.stopAutoPlay(); // ¡Importante! Limpiar timer al salir
+  }
   // --- Lógica del Carrusel ---
   nextGame() {
     // El módulo (%) hace que 2 + 1 = 3 -> 3 % 3 = 0 (vuelve al inicio)
@@ -93,6 +102,7 @@ public games = [
 
   jumpToGame(index: number) {
     this.currentIndex = index;
+    this.resetAutoPlay();
   }
 
   selectGame(game: any) {
@@ -105,6 +115,76 @@ public games = [
     } 
     else {
       alert('¡Este juego estará disponible próximamente!');
+    }
+  }
+
+  // --- LÓGICA DE SWIPE (TÁCTIL) ---
+
+  onTouchStart(e: TouchEvent) {
+    this.touchStartX = e.changedTouches[0].screenX;
+    this.stopAutoPlay(); // Pausar mientras el usuario toca
+  }
+
+  onTouchEnd(e: TouchEvent) {
+    this.touchEndX = e.changedTouches[0].screenX;
+    this.handleSwipe();
+    this.startAutoPlay(); // Reanudar
+  }
+
+  private handleSwipe() {
+    // Umbral mínimo (50px) para considerar que fue un swipe intencional
+    const threshold = 50;
+    
+    if (this.touchEndX < this.touchStartX - threshold) {
+      // Deslizó a la IZQUIERDA -> Siguiente
+      this.nextGame();
+    } else if (this.touchEndX > this.touchStartX + threshold) {
+      // Deslizó a la DERECHA -> Anterior
+      this.prevGame();
+    }
+  }
+
+  // --- LÓGICA DE AUTO-PLAY ---
+
+  private startAutoPlay() {
+    if (this.autoPlaySubscription) return; // Ya está corriendo
+    
+    // Cambia cada 5 segundos (5000ms)
+    this.autoPlaySubscription = interval(5000).subscribe(() => {
+      this.nextGame();
+    });
+  }
+
+  private stopAutoPlay() {
+    if (this.autoPlaySubscription) {
+      this.autoPlaySubscription.unsubscribe();
+      this.autoPlaySubscription = null;
+    }
+  }
+
+  public resetAutoPlay() {
+    this.stopAutoPlay();
+    this.startAutoPlay();
+  }
+
+  // Método para decidir qué clase CSS lleva cada carta
+  getCardClass(index: number): string {
+    const len = this.games.length;
+    
+    // Índice de la carta ANTERIOR (Izquierda)
+    const prevIndex = (this.currentIndex - 1 + len) % len;
+    
+    // Índice de la carta SIGUIENTE (Derecha)
+    const nextIndex = (this.currentIndex + 1) % len;
+
+    if (index === this.currentIndex) {
+      return 'card-center';
+    } else if (index === prevIndex) {
+      return 'card-left';
+    } else if (index === nextIndex) {
+      return 'card-right';
+    } else {
+      return 'card-hidden'; // Si hubiera más de 3 juegos
     }
   }
 }

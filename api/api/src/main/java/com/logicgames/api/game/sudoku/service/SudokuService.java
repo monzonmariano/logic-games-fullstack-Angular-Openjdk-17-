@@ -18,7 +18,7 @@ import com.logicgames.api.game.sudoku.dto.SaveGameRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
-import com.logicgames.api.game.sudoku.dto.ScoreboardEntryDTO;
+import com.logicgames.api.game.common.dto.ScoreboardEntryDTO;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 

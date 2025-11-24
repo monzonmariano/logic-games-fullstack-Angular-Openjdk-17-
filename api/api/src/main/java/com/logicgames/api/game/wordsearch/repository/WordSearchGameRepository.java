@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,4 +21,6 @@ public interface WordSearchGameRepository extends JpaRepository<WordSearchGame, 
     @Modifying
     @Transactional
     void deleteByStateAndLastUpdatedAtBefore(String state, LocalDateTime cutOffDate);
+
+    List<WordSearchGame> findByUserAndStateOrderByTimeElapsedSecondsAsc(User user, String state);
 }

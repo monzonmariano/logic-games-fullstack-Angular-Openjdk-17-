@@ -15,17 +15,25 @@
 
   <mat-list role="list">
     @for (game of games; track game.id) {
-    <mat-list-item role="listitem">
-      <mat-icon matListItemIcon>emoji_events</mat-icon>
+   <mat-list-item role="listitem">
+      
+      <mat-icon matListItemIcon>
+        @if (game.gameType === 'SUDOKU') { grid_on } 
+        @else if (game.gameType === 'WORD_SEARCH') { format_shapes }
+        @else { emoji_events }
+      </mat-icon>
 
-      <div matListItemTitle>{{ game.userEmail }}</div>
+      <div matListItemTitle>
+        @if (game.gameType === 'SUDOKU') { Sudoku } 
+        @else if (game.gameType === 'WORD_SEARCH') { Sopa de Letras }
+        - {{ game.difficulty }}
+      </div>
 
       <div matListItemLine>
-        <span>Dificultad: {{ game.difficulty }}</span> <span class="date-span">Tiempo: {{
-          formatTime(game.timeElapsedSeconds) }}</span>
+        <span class="time-span">Tiempo: {{ formatTime(game.timeElapsedSeconds) }}</span>
       </div>
       <div matListItemLine>
-        <span class="date-span">Completado: {{ game.lastUpdatedAt | date:'short' }}</span>
+        <span class="date-span">Fecha: {{ game.lastUpdatedAt | date:'short' }}</span>
       </div>
     </mat-list-item>
     }

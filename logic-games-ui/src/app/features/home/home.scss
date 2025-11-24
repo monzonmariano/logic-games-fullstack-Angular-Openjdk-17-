@@ -1,202 +1,200 @@
-:host {
-  display: block;
-  height: 100%;
-}
+// home.scss
 
+// --- CONTENEDOR PRINCIPAL ---
 .home-container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
+  // En móvil, si la pantalla es pequeña, preferimos que empiece arriba
+  // y scrollee si hace falta, en vez de centrar y cortar.
+  justify-content: flex-start; 
+  
   height: 100%;
-  overflow: hidden;
-  padding: 20px;
+  width: 100%;
+  background: radial-gradient(circle at 50% 30%, #ffffff 0%, #eef2f5 60%, #e0e5ec 100%);
+  // Esto crea un "foco de luz" sutil detrás de las cartas que le da profundidad 3D.
+  // Padding generoso para que nada toque los bordes
+  padding: 20px; 
+  padding-top: 40px; // Espacio extra arriba para móvil
+  
   box-sizing: border-box;
-  background: #f4f4f4;
-  position: relative;
+  overflow-y: auto; // Scroll si hace falta
+  overflow-x: hidden;
+  
+  // ESPACIO VITAL: Esto separa Selector - Cartas - Controles
+  gap: 25px; 
 }
 
-// --- ESTILOS POR DEFECTO (MÓVIL VERTICAL) ---
-
+// --- USUARIO (EL CAMBIO CLAVE) ---
 .user-display {
+  // 1. MÓVIL: Parte del flujo normal (empuja lo de abajo)
   position: relative; 
-  display: flex;
-  align-items: center;
+  width: auto;
+  
+  // Lo alineamos a la derecha visualmente, pero ocupando espacio
+  align-self: flex-end; 
+  
+  display: flex; 
+  align-items: center; 
   gap: 8px;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.9em;
-  color: #333;
-  z-index: 10;
   
-  // --- ARREGLO 1 (Caja de Usuario) ---
-  width: auto; // ¡YA NO es 90%! La caja se ajusta al texto.
-  max-width: 400px;
-  margin-bottom: 15px;
-  align-self: flex-end; // ¡Esto alinea la caja (ahora pequeña) a la derecha!
-  justify-content: flex-end;
+  background: white; 
+  padding: 8px 16px; 
+  border-radius: 30px;
+  color: #555; 
+  font-weight: 600; 
+  font-size: 0.9rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  z-index: 50;
+  
+  // Un margen abajo para separarse del selector en móvil
+  margin-bottom: 10px; 
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; color: #777; }
 }
 
-.game-selector {
-  position: relative;
-  width: 90%;
-  max-width: 400px;
-  margin-bottom: 20px;
-}
-
-.game-swiper-container {
+// --- SELECTOR RÁPIDO ---
+.quick-selector {
   width: 100%;
-  max-width: 400px; // Tamaño por defecto (móvil)
-  overflow: hidden;
-  border-radius: 15px;
+  max-width: 320px;
+  z-index: 20;
+  // Quitamos márgenes manuales y confiamos en el gap del container
+  margin: 0; 
+  
+  .selector-field {
+    width: 100%;
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background-color: white; 
+      border-radius: 16px; // Un poco más cuadrado que antes
+      padding: 0 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    ::ng-deep .mdc-line-ripple { display: none; }
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+    ::ng-deep .mat-mdc-form-field-flex { height: 50px; align-items: center; }
+  }
 }
 
-.game-swiper-track {
-  display: flex;
-  transition: transform 0.3s ease-in-out;
+// --- EL MAZO DE CARTAS ---
+.game-deck-container {
+  width: 280px; 
+  height: 400px; // Un poco más altas para elegancia
+  max-width: 85vw; 
+  aspect-ratio: 2 / 3; 
+  
+  position: relative;
+  // Sin márgenes, usamos el gap del padre
+  margin: 0 auto;
+  perspective: 1000px;
+  
+  cursor: grab; touch-action: pan-y;
+  &:active { cursor: grabbing; }
 }
 
+// --- LA CARTA ---
 .game-card {
-  width: 100%;
-  flex-shrink: 0;
-  box-sizing: border-box;
-  padding: 20px;
-  text-align: center;
-  position: relative;
-  min-height: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-radius: 15px;
-  background-size: cover;
-  background-position: center;
-  color: white;
-  cursor: pointer; // Muestra la "manito"
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  outline: none; // Evita el "recuadro" de foco al hacer clic
-
-  &:hover {
-    transform: scale(1.02);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  }
-  // Se oscurece al hacer clic
-  &:active {
-    transform: scale(0.99); // Se "hunde" un poco
-    
-    // Oscurece más el velo
-    &::before {
-      background: rgba(0, 0, 0, 0.5); 
-    }
-  }
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background-size: cover; background-position: center;
+  border-radius: 24px; overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
   
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    transition: background 0.2s ease;
-    border-radius: 15px;
-    z-index: 1;
-  }
-
-  h3, p, .play-button {
-    
-    position: relative;
-    z-index: 2;
-    pointer-events: none; // ¡Impide que el texto "robe" el clic!
-  }
-
-  h3 {
-    font-size: 2.2em;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  }
-
-  p {
-    font-size: 1.1em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  }
-
-  .play-button {
-    position: absolute;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90px;
-    height: 90px;
-    background: transparent;
-    border: none; 
-    z-index: 2;
-    pointer-events: none;
-
-    mat-icon {
-      font-size: 55px;
-      width: 55px;
-      height: 55px;
-      color: white;
-      opacity: 0.8;
-    }
-  
-  
-  }
-} 
-
-.swiper-controls {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 400px;
-}
-
-// --- ARREGLO 2 y 3 (PC y Móvil Horizontal) ---
-
-// Solo se aplica si es "Ancho" Y "Alto" (es decir, PC o Tablet Vertical)
-@media (min-width: 768px) and (min-height: 500px) {
-   .home-container {
-    justify-content: center; // En PC, vuelve a centrar el contenido (la tarjeta)
-  }
-  // En PC, volvemos al layout 'absolute'
-  .user-display {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: auto; 
-    align-self: auto;
-    justify-content: flex-start;
-  }
-
-  .game-selector {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 60%;
-    max-width: 300px;
-  }
-
-  // ¡Hacemos las tarjetas más grandes en PC!
-  .game-swiper-container {
-    max-width: 600px; // <-- ¡Más grande!
-  }
-
-  .game-card {
-    min-height: 350px; // <-- ¡Más grande!
+  &::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5); transition: background 0.5s;
+    z-index: 2; pointer-events: none;
   }
 }
 
-// Solo se aplica si es "Horizontal" Y "Bajo" (Móvil girado)
-@media (orientation: landscape) and (max-height: 499px) {
+// --- ESTADOS 3D ---
+.game-card.card-center {
+  transform: translateX(0) scale(1) translateZ(100px);
+  z-index: 10; opacity: 1;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.35); // Sombra fuerte al centro
+  &::after { background: rgba(0,0,0,0); }
+}
+.game-card.card-left {
+  transform: translateX(-60%) scale(0.85) translateZ(0) rotateY(10deg); z-index: 5;
+}
+.game-card.card-right {
+  transform: translateX(60%) scale(0.85) translateZ(0) rotateY(-10deg); z-index: 5;
+}
+.game-card.card-hidden { transform: scale(0.8); opacity: 0; z-index: 0; }
+
+// --- CONTENIDO ---
+.card-content {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0; transition: opacity 0.4s ease 0.1s; z-index: 3;
+  &.visible { opacity: 1; }
   
-  // Si la pantalla es horizontal y de poca altura...
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, transparent 80%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 25px 20px; text-align: center; color: white; box-sizing: border-box;
+  
+  h3 { margin: 0 0 5px; font-size: 2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+  p { margin: 0; font-size: 0.95rem; opacity: 0.9; line-height: 1.4; }
+}
+
+.play-button {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 75px; height: 75px; border-radius: 50%; z-index: 4;
+  background: rgba(255,255,255,0.25); backdrop-filter: blur(6px);
+  border: 2px solid rgba(255,255,255,0.8);
+  box-shadow: 0 0 30px rgba(0,0,0,0.2);
+  display: flex; justify-content: center; align-items: center;
+  mat-icon { font-size: 45px; width: 45px; height: 45px; color: white; margin-left: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+}
+
+// --- CONTROLES ---
+.controls-wrapper {
+  display: flex; align-items: center; justify-content: center; gap: 20px; 
+  width: 100%;
+  // Quitamos margin-top porque ya usamos gap en el padre
+  
+  button { 
+    background: white; color: #444; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+  }
+}
+
+.dots-indicator {
+  display: flex; gap: 8px;
+  .dot {
+    width: 8px; height: 8px; background: #ccc; border-radius: 50%; transition: all 0.3s;
+    &.active { background: #333; transform: scale(1.4); }
+  }
+}
+
+// --- 🖥️ AJUSTE EXCLUSIVO PC ---
+@media (min-width: 768px) {
   .home-container {
-    height: auto; // ...deja que el contenido crezca...
-    overflow-y: auto; // ...y permite el scroll.
+    justify-content: center; 
+    padding: 40px;
+    
+    // CAMBIO CLAVE: Aumentamos el espacio entre elementos SOLO en PC
+    // En móvil seguirá siendo 25px. Aquí le damos aire.
+    gap: 50px; 
+  }
+
+  .user-display {
+    position: absolute; 
+    top: 30px;
+    right: 30px;
+    margin-bottom: 0;
+    padding: 8px 20px;
+    font-size: 1rem;
   }
   
-  // (¡Importante! Como este media query NO cumple la condición
-  // 'min-height: 500px', NO usará los estilos 'absolute' de PC,
-  // y se quedará con el layout "apilado" de móvil, que es lo que queremos)
+  .game-deck-container {
+    width: 320px;
+    height: 480px;
+    max-width: none;
+    // Un pequeño margen extra visual arriba y abajo si hace falta
+    margin: 10px auto; 
+  }
+  
+  // Opcional: Si quieres separar aún más los controles de abajo específicamente
+  .controls-wrapper {
+    margin-top: 10px;
+  }
 }

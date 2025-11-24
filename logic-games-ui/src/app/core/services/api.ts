@@ -156,6 +156,6 @@ export class Api {
   public getScoreboard(): Observable<ScoreboardEntry[]> {
     // Llama a GET /api/sudoku/scoreboard
     // Espera un array de objetos SudokuGame
-    return this.http.get<ScoreboardEntry[]>(`${this.apiUrl}/sudoku/scoreboard`);
+    return this.http.get<ScoreboardEntry[]>(`${this.apiUrl}/games/scoreboard`);
   }
 }

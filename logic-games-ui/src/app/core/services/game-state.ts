@@ -22,6 +22,7 @@ export interface SudokuGame {
 // Esta interfaz coincide con ScoreboardEntryDTO.java
 export interface ScoreboardEntry {
   id: number;
+  gameType: string;
   difficulty: string;
   timeElapsedSeconds: number;
   lastUpdatedAt: string;
