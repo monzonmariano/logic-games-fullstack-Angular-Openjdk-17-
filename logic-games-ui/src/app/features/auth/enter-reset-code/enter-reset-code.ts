@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon'; // <-- IMPORTADO
 
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('newPassword')?.value;
@@ -19,7 +20,8 @@ function passwordMatchValidator(control: AbstractControl) {
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
-    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule
+    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule,
+    MatIconModule // <-- REGISTRADO
   ],
   templateUrl: './enter-reset-code.html',
   styleUrls: ['./enter-reset-code.scss']
@@ -31,6 +33,10 @@ export class EnterResetCode implements OnInit {
   serverError: string | null = null;
   serverSuccess: string | null = null;
   private passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!%*?&]).{8,}$/;
+  
+  // <-- VARIABLES DEL OJITO
+  public hidePassword = true;
+  public hideConfirmPassword = true;
 
   constructor(
     private fb: FormBuilder,
@@ -59,7 +65,6 @@ export class EnterResetCode implements OnInit {
 
     this.serverError = null;
     
-    // ¡Llamamos al nuevo método de la API!
     this.apiService.resetPasswordWithCode({
       email: this.userEmail,
       otpCode: this.resetForm.value.otpCode!,
@@ -70,7 +75,12 @@ export class EnterResetCode implements OnInit {
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        this.serverError = err.error || 'Error al resetear contraseña.';
+        // FIX: Prevención del error null de JavaScript
+        if (err.error !== null && typeof err.error === 'object') {
+          this.serverError = err.error.message || 'Error al resetear contraseña.';
+        } else {
+          this.serverError = err.error || 'Error al resetear contraseña.';
+        }
       }
     });
   }

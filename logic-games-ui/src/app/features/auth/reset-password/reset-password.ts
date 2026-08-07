@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon'; // <-- IMPORTADO
 
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('newPassword')?.value;
@@ -33,7 +34,9 @@ function passwordMatchValidator(control: AbstractControl) {
     MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
-    MatCardModule],
+    MatCardModule,
+    MatIconModule // <-- REGISTRADO
+  ],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.scss',
 })
@@ -43,30 +46,31 @@ export class ResetPassword implements OnInit {
   resetForm;
   private passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!%*?&]).{8,}$/;
 
-  // ¡Variables para el estado!
   private token: string | null = null;
   public message: string = "";
   public isError: boolean = false;
+  
+  // <-- VARIABLES DEL OJITO
+  public hidePassword = true;
+  public hideConfirmPassword = true;
 
   constructor(
     private fb: FormBuilder,
     private apiService: Api,
     private router: Router,
-    private route: ActivatedRoute // <-- ¡El "Lector de URLs"!
+    private route: ActivatedRoute
   ) {
     this.resetForm = this.fb.group({
       newPassword: ['', [Validators.required, Validators.pattern(this.passwordPattern)]],
       confirmPassword: ['', [Validators.required]]
     }, {
-      validators: [passwordMatchValidator] // ¡Validación cruzada!
+      validators: [passwordMatchValidator]
     });
   }
 
   ngOnInit(): void {
-    // ¡¡AQUÍ LEEMOS EL TOKEN!!
-    // 'route.queryParamMap' lee los parámetros ?token=... de la URL
     this.route.queryParamMap.subscribe(params => {
-      this.token = params.get('token'); // Coge el token de la URL
+      this.token = params.get('token');
       if (!this.token) {
         this.isError = true;
         this.message = "Error: No se ha proporcionado un token de reseteo.";
@@ -84,22 +88,24 @@ export class ResetPassword implements OnInit {
 
     const newPassword = this.resetForm.value.newPassword as string;
 
-    // ¡Llamamos a la API!
     this.apiService.resetPassword({ token: this.token, newPassword: newPassword })
       .subscribe({
         next: () => {
           this.message = "¡Contraseña actualizada! Serás redirigido al login.";
           this.isError = false;
-          // Espera 3 segundos y redirige
           setTimeout(() => {
             this.router.navigate(['/login']);
           }, 3000);
         },
         error: (err) => {
           this.isError = true;
-          this.message = err.error || "Error: El token es inválido o ha caducado.";
+          // FIX: Prevención del error null de JavaScript
+          if (err.error !== null && typeof err.error === 'object') {
+            this.message = err.error.message || "Error: El token es inválido o ha caducado.";
+          } else {
+            this.message = err.error || "Error: El token es inválido o ha caducado.";
+          }
         }
       });
   }
-
 }

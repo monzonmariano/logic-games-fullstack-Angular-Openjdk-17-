@@ -5,8 +5,15 @@
     </mat-card-header>
     
     <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Nuevo diseño de error (Banner limpio) -->
+      @if (serverError) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ serverError }}</span>
+        </div>
+      }
 
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="fill">
           <mat-label>Email:</mat-label>
           <input matInput type="email" formControlName="email" placeholder="tu@email.com">
@@ -17,15 +24,19 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Contraseña:</mat-label>
-          <input matInput type="password" formControlName="password">
+          <!-- El type cambia dinámicamente -->
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+          
+          <!-- Botón del ojito -->
+          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
             <mat-error>La contraseña es obligatoria.</mat-error>
           }
         </mat-form-field>
         
-        @if (serverError) {
-          <mat-error class="server-error">{{ serverError }}</mat-error>
-        }
         <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
           Iniciar Sesión
         </button>
@@ -33,7 +44,6 @@
     </mat-card-content>
 
     <mat-card-actions>
-      
       @if (isNotVerifiedError) {
         <button mat-button (click)="onResendCode()">Reenviar código</button>
         <button mat-button (click)="goToVerification()">Usar código</button>
@@ -41,6 +51,6 @@
         <a mat-button routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
         <a mat-button routerLink="/register">Crear una cuenta</a>
       }
-      </mat-card-actions>
+    </mat-card-actions>
   </mat-card>
 </div>

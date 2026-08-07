@@ -21,13 +21,33 @@ mat-card-content {
   padding-top: 20px;
 }
 
-.status-message {
-  font-size: 1.1em;
+.error-banner, .success-banner {
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
   font-weight: 500;
-
-  &.error {
-    color: #f44336; // Rojo
+  
+  mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
   }
+}
+
+.error-banner {
+  background-color: #fdecea;
+  color: #f44336;
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.1);
+}
+
+.success-banner {
+  background-color: #e0ffe0;
+  color: #2e7d32;
+  box-shadow: 0 2px 4px rgba(46, 125, 50, 0.1);
 }
 
 mat-card-actions {

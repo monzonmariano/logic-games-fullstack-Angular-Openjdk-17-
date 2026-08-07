@@ -1,34 +1,32 @@
 package com.logicgames.api.email;
 
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
-
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 public class EmailService {
 
-    @Value("${app.sendgrid.api-key}")
-    private String sendGridApiKey;
+    @Autowired
+    private JavaMailSender mailSender;
+
+    // Leemos la contraseña del correo desde las propiedades
+    @Value("${spring.mail.password:}")
+    private String emailPassword;
 
     @Value("${APP_FRONTEND_URL}")
     private String frontendBaseUrl;
 
-    private final String FROM_EMAIL = "monzonmariano1@gmail.com";
-
-    private SendGrid sendGridClient;
+    // IMPORTANTE: Resend te pedirá enviar desde 'onboarding@resend.dev'
+    // hasta que verifiques tu propio dominio (ej. hola@logicgames.com).
+    private final String FROM_EMAIL = "onboarding@resend.dev";
 
     public void sendVerificationEmail(String toEmail, String code, String linkToken) {
         String subject = "¡Bienvenido a LogicGames! Confirma tu cuenta";
-
-        // ¡La URL a la que irá el enlace! (La crearemos en el frontend)
         String verificationLink = frontendBaseUrl + "/verify-link?token=" + linkToken;
 
         String contentBody = "¡Gracias por registrarte! <br>"
@@ -38,11 +36,9 @@ public class EmailService {
                 + "<a href='" + verificationLink + "' target='_blank'>Activar mi Cuenta</a>"
                 + "<p>Si no te has registrado, por favor ignora este email.</p>";
 
-        // El modo simulación ahora imprimirá AMBAS cosas
         sendEmail(toEmail, subject, contentBody, code, verificationLink);
     }
 
-    // --- ¡NUEVO MÉTODO 2! (Para recuperar contraseña) ---
     public void sendPasswordResetCode(String toEmail, String code) {
         String subject = "Tu código de reseteo de contraseña de LogicGames";
         String contentBody = "Hemos recibido una solicitud para resetear tu contraseña. Tu código de 6 dígitos es: "
@@ -53,11 +49,8 @@ public class EmailService {
         sendEmail(toEmail, subject, contentBody, code);
     }
 
-    // --- ¡NUEVO MÉTODO DE RESETEO! ---
     public void sendPasswordResetEmail(String toEmail, String code, String linkToken) {
         String subject = "Tu solicitud de reseteo de contraseña de LogicGames";
-
-        // ¡La URL a la que irá el enlace! (Apunta a tu componente existente)
         String resetLink = frontendBaseUrl + "/reset-password?token=" + linkToken;
 
         String contentBody = "Has solicitado resetear tu contraseña.<br>"
@@ -70,13 +63,10 @@ public class EmailService {
 
         sendEmail(toEmail, subject, contentBody, code, resetLink);
     }
-    /**
-     * Método "helper" privado que construye y envía el email.
-     */
+
     private void sendEmail(String toEmail, String subject, String contentBody, String... debugInfo) {
-        // --- ¡MODO SIMULACIÓN (CORREGIDO)! ---
-        // Ahora SÍ comprobará la clave del .env
-        if (sendGridApiKey == null || sendGridApiKey.equals("SG.FAKE.test_key")) {
+        // Mantenemos tu genial modo de simulación
+        if (emailPassword == null || emailPassword.isBlank() || emailPassword.equals("FAKE_PASSWORD")) {
             System.out.println("--- MODO SIMULACIÓN DE EMAIL ---");
             System.out.println("A: " + toEmail);
             System.out.println("Asunto: " + subject);
@@ -87,24 +77,20 @@ public class EmailService {
             return;
         }
 
-        // --- Lógica real de SendGrid ---
-        Email from = new Email(FROM_EMAIL);
-        Email to = new Email(toEmail);
-        Content content = new Content("text/html", contentBody);
-        Mail mail = new Mail(from, subject, to, content);
-
-        SendGrid sg = new SendGrid(sendGridApiKey);
-        Request request = new Request();
-
         try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-            sg.api(request);
+            // Lógica estándar de Spring Boot para enviar HTML
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+            helper.setFrom(FROM_EMAIL);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(contentBody, true); // El 'true' indica que es HTML
+
+            mailSender.send(message);
             System.out.println("Email enviado exitosamente a: " + toEmail);
 
-        } catch (IOException ex) {
+        } catch (MessagingException ex) {
             System.err.println("Error al enviar email: " + ex.getMessage());
             throw new RuntimeException("Error al enviar email", ex);
         }

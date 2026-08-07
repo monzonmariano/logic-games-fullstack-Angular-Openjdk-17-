@@ -7,18 +7,24 @@
       
       @if (isLoading) {
         <mat-spinner diameter="50"></mat-spinner>
+        <p style="margin-top: 15px; font-weight: 500;">{{ statusMessage }}</p>
+      } @else {
+        <div [class]="isError ? 'error-banner' : 'success-banner'" style="width: 100%; box-sizing: border-box;">
+          <mat-icon>{{ isError ? 'error_outline' : 'check_circle' }}</mat-icon>
+          <span>{{ statusMessage }}</span>
+        </div>
       }
-
-      <p class="status-message" [class.error]="isError">
-        {{ statusMessage }}
-      </p>
 
     </mat-card-content>
-    <mat-card-actions>
-      @if (isError) {
-        <a mat-button routerLink="/register">Volver a Registrarse</a>
-      }
-      <a mat-button routerLink="/login">Ir a Login</a>
-    </mat-card-actions>
+    
+    <!-- Ocultamos los botones si está cargando para que no haya acciones accidentales -->
+    @if (!isLoading) {
+      <mat-card-actions>
+        @if (isError) {
+          <a mat-button routerLink="/register">Volver a Registrarse</a>
+        }
+        <a mat-button routerLink="/login">Ir a Login</a>
+      </mat-card-actions>
+    }
   </mat-card>
 </div>

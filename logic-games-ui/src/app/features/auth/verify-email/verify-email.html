@@ -6,18 +6,25 @@
 
     <mat-card-content>
       @if (userEmail) {
-      <p>
-        ¡Gracias por registrarte! Te hemos enviado un código de 6 dígitos a
-        <strong>{{ userEmail }}</strong>.
-      </p>
-      <p>Por favor, revisa tu email (y tu carpeta de spam) e introduce el código abajo.</p>
-     <!--
-      <p class="simulation-note">
-        <b>Nota de Prueba:</b> El "Modo Simulación" está activo.
-        Revisa la **consola de tu backend (logs)** para ver el código de 6 dígitos.
-      </p>
+        <p>
+          ¡Gracias por registrarte! Te hemos enviado un código de 6 dígitos a
+          <strong>{{ userEmail }}</strong>.
+        </p>
+        <p>Por favor, revisa tu email (y tu carpeta de spam) e introduce el código abajo.</p>
+      }
 
-      -->
+      <!-- Reemplazamos los mensajes sueltos por los banners elegantes -->
+      @if (serverError) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ serverError }}</span>
+        </div>
+      }
+      @if (serverSuccess) {
+        <div class="success-banner">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ serverSuccess }}</span>
+        </div>
       }
 
       <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()">
@@ -26,20 +33,11 @@
           <input matInput formControlName="otpCode" placeholder="123456" maxlength="6">
 
           @if (verifyForm.get('otpCode')?.invalid && verifyForm.get('otpCode')?.touched) {
-          <mat-error>Introduce un código de 6 dígitos válido.</mat-error>
+            <mat-error>Introduce un código de 6 dígitos válido.</mat-error>
           }
         </mat-form-field>
 
-        @if (serverError) {
-        <mat-error class="server-message">{{ serverError }}</mat-error>
-        }
-        @if (serverSuccess) {
-        <div class="server-message success">{{ serverSuccess }}</div>
-        }
-
-        <button mat-raised-button color="primary" type="submit" [disabled]="verifyForm.invalid || isBlocked"> Verificar
-          Cuenta
-        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="verifyForm.invalid || isBlocked"> Verificar Cuenta </button>
       </form>
     </mat-card-content>
 

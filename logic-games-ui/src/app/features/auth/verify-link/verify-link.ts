@@ -5,6 +5,7 @@ import { Api } from '../../../core/services/api';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon'; // <-- IMPORTADO
 
 @Component({
   selector: 'app-verify-link',
@@ -14,12 +15,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     RouterLink,
     MatCardModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatIconModule // <-- REGISTRADO
   ],
   templateUrl: './verify-link.html',
   styleUrls: ['./verify-link.scss']
 })
-
 export class VerifyLink implements OnInit{
 
   public isLoading: boolean = true;
@@ -32,9 +33,7 @@ export class VerifyLink implements OnInit{
     private apiService: Api
   ) {}
 
-
   ngOnInit(): void {
-    // 1. Lee el token de la URL (ej. /verify-link?token=abc-123)
     const token = this.route.snapshot.queryParamMap.get('token');
 
     if (!token) {
@@ -44,10 +43,8 @@ export class VerifyLink implements OnInit{
       return;
     }
 
-    // 2. Llama a la API del backend
     this.apiService.verifyEmailLink(token).subscribe({
       next: (response) => {
-        // ¡ÉXITO!
         this.isLoading = false;
         this.isError = false;
         this.statusMessage = response + " ¡Serás redirigido al login en 3 segundos!";
@@ -57,10 +54,15 @@ export class VerifyLink implements OnInit{
         }, 3000);
       },
       error: (err) => {
-        // ¡ERROR! (ej. "Enlace caducado")
         this.isLoading = false;
         this.isError = true;
-        this.statusMessage = err.error || "No se pudo verificar tu cuenta.";
+        
+        // FIX: Prevención del error null de JavaScript
+        if (err.error !== null && typeof err.error === 'object') {
+          this.statusMessage = err.error.message || "No se pudo verificar tu cuenta.";
+        } else {
+          this.statusMessage = err.error || "No se pudo verificar tu cuenta.";
+        }
       }
     });
   }

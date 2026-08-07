@@ -1,60 +1,63 @@
 <div class="form-container">
   <mat-card>
     <mat-card-header>
-      @if (serverError) {
-          <mat-error class="server-error">{{ serverError }}</mat-error>
-        }
       <mat-card-title>Crear Cuenta</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
+      <!-- Nuevo banner de error, movido fuera del header -->
+      @if (serverError) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ serverError }}</span>
+        </div>
+      }
+
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="fill">
-          
             <mat-label>Email:</mat-label>
             <input matInput id="email" type="email" formControlName="email" placeholder="tu@email.com">
-
             @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-            <mat-error>Por favor, introduce un email válido.</mat-error>
+              <mat-error>Por favor, introduce un email válido.</mat-error>
             }
-        
         </mat-form-field>
 
         <mat-form-field appearance="fill">
-          
             <mat-label>Contraseña:</mat-label>
-            <input matInput  type="password" formControlName="password">
+            <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+            
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
 
             @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
-
-            <mat-error>
-              @if (registerForm.get('password')?.errors?.['required']) {
-              La contraseña es obligatoria.
-              }
-
-              @if (registerForm.get('password')?.errors?.['minlength']) {
-              Debe tener al menos 8 caracteres.
-              }
-
-              @if (registerForm.get('password')?.errors?.['pattern']) {
-              Debe incluir mayúscula, minúscula, número y caracter especial ($@!%*?&).
-              }
-            </mat-error>
-
+              <mat-error>
+                @if (registerForm.get('password')?.errors?.['required']) {
+                  La contraseña es obligatoria.
+                }
+                @if (registerForm.get('password')?.errors?.['minlength']) {
+                  Debe tener al menos 8 caracteres.
+                }
+                @if (registerForm.get('password')?.errors?.['pattern']) {
+                  Debe incluir mayúscula, minúscula, número y caracter especial ($@!%*?&).
+                }
+              </mat-error>
             }
-          
         </mat-form-field>
 
         <mat-form-field appearance="fill">
-          
             <mat-label>Confirmar Contraseña:</mat-label>
-            <input matInput type="password" formControlName="confirmPassword">
-          
+            <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword">
+            
+            <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
+              <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
         
-        @if (registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.dirty) {
-        <mat-error>Las contraseñas no coinciden.</mat-error>
-        }
+            @if (registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.dirty) {
+              <mat-error>Las contraseñas no coinciden.</mat-error>
+            }
          </mat-form-field>
+         
         <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">
           Crear Cuenta
         </button>
