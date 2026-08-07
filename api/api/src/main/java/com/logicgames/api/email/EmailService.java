@@ -1,29 +1,24 @@
 package com.logicgames.api.email;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
-
-    // Leemos la contraseña del correo desde las propiedades
     @Value("${spring.mail.password:}")
-    private String emailPassword;
+    private String emailPassword; // Aquí usaremos tu API Key de Resend (ej: re_123456...)
 
     @Value("${APP_FRONTEND_URL}")
     private String frontendBaseUrl;
 
-    // IMPORTANTE: Resend te pedirá enviar desde 'onboarding@resend.dev'
-    // hasta que verifiques tu propio dominio (ej. hola@logicgames.com).
     private final String FROM_EMAIL = "onboarding@resend.dev";
+    private final String RESEND_API_URL = "https://api.resend.com/emails";
 
     public void sendVerificationEmail(String toEmail, String code, String linkToken) {
         String subject = "¡Bienvenido a LogicGames! Confirma tu cuenta";
@@ -36,7 +31,7 @@ public class EmailService {
                 + "<a href='" + verificationLink + "' target='_blank'>Activar mi Cuenta</a>"
                 + "<p>Si no te has registrado, por favor ignora este email.</p>";
 
-        sendEmail(toEmail, subject, contentBody, code, verificationLink);
+        sendEmailViaApi(toEmail, subject, contentBody);
     }
 
     public void sendPasswordResetCode(String toEmail, String code) {
@@ -46,7 +41,7 @@ public class EmailService {
                 + "<p>Introduce este código en la app para establecer una nueva contraseña.</p>"
                 + "<p>Si no has solicitado esto, puedes ignorar este email.</p>";
 
-        sendEmail(toEmail, subject, contentBody, code);
+        sendEmailViaApi(toEmail, subject, contentBody);
     }
 
     public void sendPasswordResetEmail(String toEmail, String code, String linkToken) {
@@ -59,40 +54,47 @@ public class EmailService {
                 + "<p>Introduce este código en la app para continuar.</p>"
                 + "<p>O, si lo prefieres, haz clic en el enlace de abajo:</p>"
                 + "<a href='" + resetLink + "' target='_blank'>Resetear mi Contraseña</a>"
-                + "<p>Si no has solicitado esto, puedes ignorar este email.</p>";
+                + "<p>Si no has solicitado esto, puedes ignora este email.</p>";
 
-        sendEmail(toEmail, subject, contentBody, code, resetLink);
+        sendEmailViaApi(toEmail, subject, contentBody);
     }
 
-    private void sendEmail(String toEmail, String subject, String contentBody, String... debugInfo) {
-        // Mantenemos tu genial modo de simulación
+    private void sendEmailViaApi(String toEmail, String subject, String htmlContent) {
+        // Modo simulación local si no hay API key real
         if (emailPassword == null || emailPassword.isBlank() || emailPassword.equals("FAKE_PASSWORD")) {
-            System.out.println("--- MODO SIMULACIÓN DE EMAIL ---");
+            System.out.println("--- MODO SIMULACIÓN DE EMAIL (API) ---");
             System.out.println("A: " + toEmail);
             System.out.println("Asunto: " + subject);
-            for (String info : debugInfo) {
-                System.out.println("¡DATO DE DEBUG!: " + info);
-            }
-            System.out.println("---------------------------------");
+            System.out.println("-------------------------------------");
             return;
         }
 
         try {
-            // Lógica estándar de Spring Boot para enviar HTML
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            RestTemplate restTemplate = new RestTemplate();
 
-            helper.setFrom(FROM_EMAIL);
-            helper.setTo(toEmail);
-            helper.setSubject(subject);
-            helper.setText(contentBody, true); // El 'true' indica que es HTML
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(emailPassword); // Tu API Key de Resend va aquí
 
-            mailSender.send(message);
-            System.out.println("Email enviado exitosamente a: " + toEmail);
+            Map<String, Object> body = new HashMap<>();
+            body.put("from", FROM_EMAIL);
+            body.put("to", new String[]{toEmail});
+            body.put("subject", subject);
+            body.put("html", htmlContent);
 
-        } catch (MessagingException ex) {
-            System.err.println("Error al enviar email: " + ex.getMessage());
-            throw new RuntimeException("Error al enviar email", ex);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(RESEND_API_URL, entity, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Email enviado exitosamente vía API a: " + toEmail);
+            } else {
+                System.err.println("Error de Resend API: " + response.getBody());
+            }
+
+        } catch (Exception ex) {
+            System.err.println("Error al conectar con Resend API: " + ex.getMessage());
+            throw new RuntimeException("Error al enviar email por API", ex);
         }
     }
 }
