@@ -46,10 +46,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Solo estas reglas nos importan ahora
+
+                        // --- RUTAS DE AUTENTICACIÓN ---
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/Hello").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/forgot-password").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/reset-password").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/verify-email").permitAll()
@@ -57,7 +57,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/auth/verify-email-link").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/reset-password-link").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/reset-password-code").permitAll()
-                        // Todo lo demás, bloqueado
+
+                        // --- EL DESPERTADOR DE NEONDB ---
+                        .requestMatchers(HttpMethod.GET, "/api/Hello").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/ping-db").permitAll() // <-- ¡AQUÍ ESTÁ!
+
+                        // --- RUTAS PÚBLICAS DE JUEGOS (MODO INVITADO / ZEN) ---
+                        // Nota: Aquí debes poner la ruta exacta que usa tu frontend
+                        // para pedir un tablero nuevo sin estar logueado.
+                        // .requestMatchers(HttpMethod.GET, "/api/sudoku/generate").permitAll()
+                        // .requestMatchers(HttpMethod.GET, "/api/wordsearch/generate").permitAll()
+
+                        // Todo lo demás, bloqueado (ej. guardar tiempos y puntajes)
                         .anyRequest().authenticated()
                 )
 

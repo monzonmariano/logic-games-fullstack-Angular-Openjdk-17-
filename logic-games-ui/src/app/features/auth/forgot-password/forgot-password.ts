@@ -68,7 +68,13 @@ export class ForgotPassword {
         console.error('Error en forgot-password:', err);
         this.isError = true;
         
-        // FIX: Prevención del error null de JavaScript
+        // --- LA PROTECCIÓN CONTRA TIMEOUTS (504) ---
+        if (err.status === 0 || err.status === 504) {
+          this.message = "El servidor está despertando. Por favor, intenta de nuevo en unos segundos.";
+          return;
+        }
+
+        // --- LA PROTECCIÓN CONTRA EL NULL ---
         if (err.error !== null && typeof err.error === 'object') {
           this.message = err.error.message || "Error en el servidor. Inténtalo más tarde.";
         } else {
